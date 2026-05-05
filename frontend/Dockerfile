@@ -1,5 +1,5 @@
 # Use an official Node runtime as a parent image
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 # Set work directory
 WORKDIR /app
@@ -10,7 +10,7 @@ RUN npm install
 
 # Copy project files
 COPY . .
-
+ENV NODE_OPTIONS="--max-old-space-size=256"
 # Build the application
 RUN npm run build
 
