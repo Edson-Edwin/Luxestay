@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-container": "#e4a58b",
+            "tertiary": "#4c2412",
+            "error-container": "#ffdad6",
+            "on-tertiary-fixed": "#331103",
+            "primary-fixed": "#b5ede7",
+            "secondary-container": "#dee0e2",
+            "outline-variant": "#bfc8c6",
+            "primary-container": "#134e4a",
+            "surface": "#f9f9ff",
+            "surface-tint": "#316763",
+            "tertiary-fixed": "#ffdbcd",
+            "primary": "#003633",
+            "on-primary-fixed": "#00201e",
+            "error": "#ba1a1a",
+            "on-tertiary": "#ffffff",
+            "surface-bright": "#f9f9ff",
+            "on-secondary-fixed-variant": "#444749",
+            "on-surface": "#151c27",
+            "surface-variant": "#dce2f3",
+            "secondary-fixed": "#e1e2e4",
+            "inverse-on-surface": "#ebf1ff",
+            "surface-container-low": "#f0f3ff",
+            "on-error-container": "#93000a",
+            "primary-fixed-dim": "#9ad1cb",
+            "on-secondary-container": "#606365",
+            "surface-dim": "#d3daea",
+            "surface-container-highest": "#dce2f3",
+            "tertiary-container": "#673a26",
+            "surface-container-high": "#e2e8f8",
+            "on-primary-fixed-variant": "#144f4b",
+            "on-secondary-fixed": "#191c1e",
+            "on-background": "#151c27",
+            "background": "#f9f9ff",
+            "surface-container": "#e7eefe",
+            "on-surface-variant": "#404847",
+            "on-tertiary-fixed-variant": "#683b27",
+            "inverse-surface": "#2a313d",
+            "tertiary-fixed-dim": "#f9b89d",
+            "secondary": "#5c5f60",
+            "on-primary-container": "#87beb8",
+            "on-error": "#ffffff",
+            "on-secondary": "#ffffff",
+            "secondary-fixed-dim": "#c5c6c8",
+            "on-primary": "#ffffff",
+            "inverse-primary": "#9ad1cb",
+            "outline": "#707977"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "lg": "40px",
+            "gutter": "24px",
+            "xs": "4px",
+            "sm": "12px",
+            "container-max": "1280px",
+            "base": "8px",
+            "xl": "64px",
+            "md": "24px"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md text-teal-900 font-['Inter'] antialiased tracking-tight docked full-width top-0 z-50 border-b border-slate-200 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.05)] sticky">
+<div class="max-w-[1280px] mx-auto px-6 lg:px-12 flex justify-between items-center h-20">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-teal-900 dark:text-teal-500 tracking-tighter">LuxeStay</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-teal-900 dark:text-teal-400 font-semibold border-b-2 border-teal-900 pb-1" href="#">Home</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">Explore</a>
+<a class="text-slate-500 dark:text-slate-400 font-medium hover:bg-slate-50 dark:hover:bg-slate-900 transition-all duration-200 ease-in-out" href="#">Experiences</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden lg:block text-sm font-semibold text-teal-900 hover:bg-slate-50 px-4 py-2 rounded-full transition-all">Switch to Hosting</button>
+<div class="flex items-center gap-2 p-2 border border-outline-variant rounded-full hover:shadow-md transition-shadow cursor-pointer">
+<span class="material-symbols-outlined px-1">menu</span>
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApyF4gG437ttb4dHP_8Bl6EV3JXg_Kpmn9Feg06Gdgu_FB4I2gL6naMlMCCDR9iXYU3t4W6RrlgV0D2VKGFUz0o33oR4QElHvx3lSSir1N0Gyzar17GPZFkzAqpPRD0eTRXac1r2BJeg90EcIfZGk1s6m69QYkEBruDDKyLVbAvMDcs3t53J7w9O-VNAQMEh4RweD7aCvQN8xcM5nG5XuiQ5Ix0eb2qw6VxLoViVS_xFW3hOLd6V9Z22ZVCFIG9FQbvMrTXmKhsmU"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative h-[640px] flex items-center justify-center px-6">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A breathtaking, wide-angle shot of a minimalist luxury villa nestled in a lush, tropical landscape during the golden hour. The architecture features clean lines, expansive floor-to-ceiling glass walls, and a shimmering infinity pool reflecting the soft, warm orange and purple hues of the sunset. The atmosphere is serene and exclusive, emphasizing high-end professional photography with deep shadows and vibrant natural highlights that align with a premium travel brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmI6S5lySA8tpJZOPNmCDrOMoFTzGgP5XMUutdSj4UGAdkvyxvOUqpwi4Ur7IUsYSZ5K-Z0deLelKTd5NI3yffvvrmIrYGgNQ_8JIqiWguWCPsZE2qUlF_tRoLZuKK_5OmBl-NepyeKEuLL_qQgEMfjU7AZI-m0GgpuW4hsLFBEI_ltX8ZWkqstu_pNsFuyty8KJ8BiFL246ORFedjIEPpkpNJZwIduaaj2u9ddBZe36SW0mJoaYixmMK5-JNPiKiUqla41okUjPk"/>
+<div class="absolute inset-0 bg-black/20"></div>
+</div>
+<div class="relative z-10 w-full max-w-4xl">
+<div class="text-center mb-10 text-white">
+<h1 class="text-display font-display mb-4">Find your next luxury retreat</h1>
+<p class="text-body-lg font-body-lg opacity-90">Curated premium stays for the discerning traveler.</p>
+</div>
+<!-- Search Bar -->
+<div class="bg-surface-container-lowest p-4 rounded-full shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col md:flex-row items-center gap-2 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+<div class="flex-1 w-full px-6 py-2">
+<label class="block text-label-caps font-label-caps text-secondary mb-1">LOCATION</label>
+<input class="w-full border-none p-0 focus:ring-0 text-body-md font-body-md placeholder-slate-400" placeholder="Where are you going?" type="text"/>
+</div>
+<div class="flex-1 w-full px-6 py-2">
+<label class="block text-label-caps font-label-caps text-secondary mb-1">DATES</label>
+<input class="w-full border-none p-0 focus:ring-0 text-body-md font-body-md placeholder-slate-400" placeholder="Add dates" type="text"/>
+</div>
+<div class="flex-1 w-full px-6 py-2">
+<label class="block text-label-caps font-label-caps text-secondary mb-1">GUESTS</label>
+<input class="w-full border-none p-0 focus:ring-0 text-body-md font-body-md placeholder-slate-400" placeholder="Add guests" type="text"/>
+</div>
+<div class="pl-4 pr-2">
+<button class="bg-primary hover:bg-primary-container text-white w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95">
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Categories -->
+<section class="max-w-[1280px] mx-auto px-6 lg:px-12 py-10">
+<div class="flex items-center gap-10 overflow-x-auto hide-scrollbar pb-4 border-b border-outline-variant">
+<button class="flex flex-col items-center gap-2 min-w-fit text-primary border-b-2 border-primary pb-2">
+<span class="material-symbols-outlined" data-icon="apartment">apartment</span>
+<span class="text-label-caps font-label-caps">HOSTELS</span>
+</button>
+<button class="flex flex-col items-center gap-2 min-w-fit text-secondary hover:text-primary transition-colors pb-2">
+<span class="material-symbols-outlined" data-icon="bed">bed</span>
+<span class="text-label-caps font-label-caps">PRIVATE ROOMS</span>
+</button>
+<button class="flex flex-col items-center gap-2 min-w-fit text-secondary hover:text-primary transition-colors pb-2">
+<span class="material-symbols-outlined" data-icon="villa">villa</span>
+<span class="text-label-caps font-label-caps">VILLAS</span>
+</button>
+<button class="flex flex-col items-center gap-2 min-w-fit text-secondary hover:text-primary transition-colors pb-2">
+<span class="material-symbols-outlined" data-icon="beach_access">beach_access</span>
+<span class="text-label-caps font-label-caps">BEACHFRONT</span>
+</button>
+<button class="flex flex-col items-center gap-2 min-w-fit text-secondary hover:text-primary transition-colors pb-2">
+<span class="material-symbols-outlined" data-icon="forest">forest</span>
+<span class="text-label-caps font-label-caps">CABINS</span>
+</button>
+<button class="flex flex-col items-center gap-2 min-w-fit text-secondary hover:text-primary transition-colors pb-2">
+<span class="material-symbols-outlined" data-icon="castle">castle</span>
+<span class="text-label-caps font-label-caps">CASTLES</span>
+</button>
+<button class="flex flex-col items-center gap-2 min-w-fit text-secondary hover:text-primary transition-colors pb-2">
+<span class="material-symbols-outlined" data-icon="pool">pool</span>
+<span class="text-label-caps font-label-caps">AMAZING POOLS</span>
+</button>
+</div>
+</section>
+<!-- Live Anywhere -->
+<section class="max-w-[1280px] mx-auto px-6 lg:px-12 py-xl">
+<h2 class="text-h1 font-h1 mb-lg">Live anywhere</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-xl overflow-hidden mb-sm shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A high-resolution photograph of a contemporary oceanfront mansion with sleek architectural lines and expansive outdoor living spaces. The scene is bathed in bright daylight, highlighting the crystalline turquoise water of the pool and the deep blue of the distant ocean. The styling is minimal and upscale, featuring neutral-toned lounge furniture and pristine white surfaces that convey a sense of absolute luxury and modern tranquility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAf0wAEk4_eafoCEAaXIJNVzhoHNXNuwMAwx9rNtSPwut68KGfzNwMj0TKNuPKKKiQdeUdkOY4bLyAO-Eb3BjF3r9CW6dr9t6RenpLN95jYNSkMUz0BEtNmZoSOVIjgtpznDir2hKjqzw3RVllgjDAH2Ps6k1ooOcJa0gD0TEFYG2xMHe2hblVT6kLDYQifesf5IAFP1U_7wS28bKmV18HJVB7BNMW-LA0VrqQYguFrM118UHJAmNIl13sHMuAc-DL8gp6Qyk4QArI"/>
+</div>
+<h3 class="text-h3 font-h3">Entire homes</h3>
+<p class="text-body-sm font-body-sm text-secondary">Unique spaces for friends &amp; family</p>
+</div>
+<!-- Card 2 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-xl overflow-hidden mb-sm shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A stylish, upscale boutique hostel interior featuring high ceilings, exposed brick walls, and modern industrial lighting. The space is filled with chic, communal seating areas including plush velvet sofas and designer wooden tables. The lighting is warm and inviting, creating a social yet sophisticated atmosphere that bridges the gap between luxury travel and hostel culture, perfectly aligned with the LuxeStay aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2OzbjHr9GxsqoqI6Kt4SWKvJTxhduxjtb53baZd8KyLMoQHMNp-1nDhM5KDlDRcp0kpDN0lDGD2gTtr9AB0jMDK55fHmFE0m2oxn7LOlc4MTJIQpPbwzb0o6PWvNp9hnOPm3VrmQ6KfqRrRR2WErZI3RjGhJUR4ILS_lnAEHLKVWirirX3CzQrlVPNgEkN4klmEriwGUpZlTcUxxfp6693JhJRtkDQthVy9Ie-6nAFkOzWBIiHXlFx1Ot2viZEBf9zB0zwwSVSCY"/>
+</div>
+<h3 class="text-h3 font-h3">Premium Hostels</h3>
+<p class="text-body-sm font-body-sm text-secondary">Social stays with a luxe touch</p>
+</div>
+<!-- Card 3 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-xl overflow-hidden mb-sm shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="An elegant beachfront villa at dusk, with soft interior lighting spilling out onto a private sandy deck. The composition emphasizes the seamless transition between the high-end minimalist interior and the natural beauty of the coastline. The color palette is composed of soft creams, warm wood tones, and the deep indigo of the evening sky, capturing a mood of peaceful luxury and architectural excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMHaeFauVuldcybGGoLeUM_e3FcTRGrgaYBAykV2WMQ-o-mYI1jda14UArHhZ1ACz4fOSRl1yEvymk9ZKHwPMq8sphYXmyY9mRtXzJq1QfVqZkfcPtXSO00f4SqWUiRbRxuXcV2msxmtiiRAtgjfVBq04HBRdNbA0Qkc0-PEfT58UWn5PDEpquDdBuoSHjyc5hAIwJsWxiCNuVktqAZwHLEZst2XS9S0a0_hkrY89yrv1re1eYtKYKIJ54saJnRCfQ4FF2nqwD0Yc"/>
+</div>
+<h3 class="text-h3 font-h3">Unique stays</h3>
+<p class="text-body-sm font-body-sm text-secondary">Spaces that are more than just a place to sleep</p>
+</div>
+<!-- Card 4 -->
+<div class="group cursor-pointer">
+<div class="aspect-square rounded-xl overflow-hidden mb-sm shadow-[0_4px_20px_rgba(0,0,0,0.05)]">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A serene, sun-drenched wellness retreat bedroom featuring organic textures, linen bedding, and large windows looking out onto a private garden. The design is extremely minimalist, focusing on high-quality materials and a palette of soft whites and teals. The image radiates professional tranquility and high-end comfort, illustrating the premium standards of the LuxeStay rental platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGR2tCyd10JW0_94FbGgLQcy9Wb5KASBwDmUqPWqSjP0_cvRja9-I5rrmZHaDE-Sw1Kg-qaeLt4G6cYV9Db1JWKUnpLGO4VTgt4gA-L3EF5s2fzvZVpCYR03CqK5ntjxgG2tERftW56oY39FSV2PoQiz87rpUpxnh5_6rKBGJbT939mJqbO_V58iC1NCLRCvaRbjUpX6yNDNFQtivSnCKP4mJKUjZSdwEmevf-Be74HF1lb10wrlocsm_zaDUsZf7QWVfE8CkMUxw"/>
+</div>
+<h3 class="text-h3 font-h3">Pet friendly</h3>
+<p class="text-body-sm font-body-sm text-secondary">Luxury for the whole family</p>
+</div>
+</div>
+</section>
+<!-- Trending Destinations (Bento Style) -->
+<section class="max-w-[1280px] mx-auto px-6 lg:px-12 py-xl bg-surface-container-low rounded-3xl mx-6">
+<div class="mb-lg flex justify-between items-end">
+<div>
+<h2 class="text-h1 font-h1">Trending Destinations</h2>
+<p class="text-body-lg font-body-lg text-secondary">The most sought-after escapes right now.</p>
+</div>
+<button class="text-primary font-semibold flex items-center gap-1 group">
+          View all <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-gutter h-[600px]">
+<div class="md:col-span-2 md:row-span-2 relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A breathtaking aerial view of Santorini, Greece, with its iconic whitewashed buildings and bright blue domes perched on the cliffside overlooking the deep blue Aegean Sea. The bright midday sun creates sharp, clean shadows and highlights the architectural purity of the village. The photograph is professionally composed to evoke a sense of aspirational luxury and world-class travel, fitting the premium minimalist theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDOu8c3oDMfm4eKvEHCQac14i1SXUvy6gohamIDbtq9QHNZu087NHPN1C68ZuPqqhY_pWj0MmfrD0qLZul9B2FcQD-esZvvxWQ0mNHdBp0jQ6dg2HxC3Q94o5RP3cBgPWpSgxzZ-26Gj6jNbwK_dk2xCXCCXn-TMqz9GpsFKoM29q-plGcmQyf6loUhEQGCAwlilU4ic6K8L1CGDgpbq46Vddhw48g5FF1o9Fx_Bl7uSgARaVrzxVkAqswjfCACwbNw6OZDXbMHvY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8 text-white">
+<p class="text-label-caps font-label-caps mb-2">GREECE</p>
+<h3 class="text-h1 font-h1">Santorini</h3>
+</div>
+</div>
+<div class="md:col-span-2 relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="An atmospheric shot of an ancient stone villa in the heart of the Tuscan countryside, surrounded by rolling green hills and cypress trees under a soft, hazy morning light. The setting is peaceful and timeless, emphasizing the architectural stability and historical luxury of the property. The image follows a high-end editorial style with muted natural tones and a focus on serene landscapes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Vuc7hP6w_s-y8cBqbTIHthnRMVmKhgiz2W89gX4LY6sZSLFQ_FFweCu0WdWyhIBJheyKRS6TclpGUI4l-3JMjg8njiVaYsBYO3s_LxunGY5pDzKK6AImuUfeZKUftVMfVQz-CoH50cq7RT1UKo-YouZaTvnyrZUG-h5KzHMRuhdWJ1XhwVWOQiKrJxvwmDJbHYjOlVvVyFlt64TAwhZCfU0M3xSpq6i0a0gnMWGg0MUpoPKaYDGev-nuntiK6eulqf9HGsKa1uE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8 text-white">
+<p class="text-label-caps font-label-caps mb-2">ITALY</p>
+<h3 class="text-h2 font-h2">Tuscany</h3>
+</div>
+</div>
+<div class="relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="A vibrant, sunny street scene in Kyoto, Japan, featuring traditional wooden architecture and blooming cherry blossoms. The lighting is crisp and clear, highlighting the intricate details of the craftsmanship and the peaceful, orderly atmosphere of the neighborhood. The image captures a blend of cultural heritage and refined aesthetic, perfect for a high-end travel platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmuX30zep29QpPEflGfb8yi_gffGxURAlh3ICtIMCvu1LLUvTS2t9IlAHkw480i1EtcqcLwcs4buZBjEj7QpBN1lDk9l3lkWIJk9GwL0sOiwtmSthSH4zziM4FW5Wd31jjezeLEcRXFVjS0ihFl8bABsFhR1rcAOWXdkY0scWwUxdFrICsHDVsvhSf3bDqzKSjq8J7ZpimXk1BeAZodBqssKo6Pajr8a7uR0MN1fqsegOGb_xpikbXKYLVICgUfkykcVUZoNRrVGE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6 text-white">
+<p class="text-label-caps font-label-caps mb-1">JAPAN</p>
+<h3 class="text-h3 font-h3">Kyoto</h3>
+</div>
+</div>
+<div class="relative rounded-2xl overflow-hidden group">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="The stunning cityscape of Paris at twilight, with the Eiffel Tower illuminated against a deep blue and pink sky. The lights of the city create a warm, romantic glow that reflects off the River Seine. This high-resolution, professional travel photograph communicates elegance and premium status, perfectly suited for a luxury stay service." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc_rdoZ2qERhK-ju09opXUWbjrzeRJsALJ8aOKkzY4Y-6moN6E_idNuHMLNys5_XXXKEPaG2ylXd3bZVALNb8mr8NuEOtNOvS9_p7hFevDl1AX13VhrrYCKsIjMIy96SWYxGVMy-I84stGX2qGSn0w3TX7kZrvMUIw2gLWrGF8PsaM-STyiUaH5BYRTD2pFw8RSOG1Y82x46ZbMLu9fbNeuYYKiT4slmBGq6dRfb5zllmf_RpHAQhUV_buUyaZtsgF2e3Wqo-md8A"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6 text-white">
+<p class="text-label-caps font-label-caps mb-1">FRANCE</p>
+<h3 class="text-h3 font-h3">Paris</h3>
+</div>
+</div>
+</div>
+</section>
+<!-- Experience Section (Asymmetric) -->
+<section class="max-w-[1280px] mx-auto px-6 lg:px-12 py-xl flex flex-col lg:flex-row items-center gap-xl">
+<div class="w-full lg:w-1/2">
+<div class="relative">
+<div class="aspect-[4/5] rounded-3xl overflow-hidden shadow-xl">
+<img class="w-full h-full object-cover" data-alt="A wide-angle, cinematic photograph of an exclusive beach club setup with white linen cabanas, plush daybeds, and high-end wooden service carts on a pristine, white sand beach. The turquoise ocean waves gently lap the shore under a clear, bright sky. The overall feel is one of effortless luxury and curated experience, emphasizing the exceptional quality of life and travel offered by LuxeStay." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgFzjnliB8Q6M9AQGPig2Y4yAZx0Ngmd8z6GVQIc17ftID52i96JclUftyBXh-pD_inQfp0MNbAi5PZPgwFJSzna1NmR2jIlmPO0PCIeCo6HhIg53YdmskDY3JdzglVKBQdN_Rn0rYtDCgT3uayztj11aJLdK3B311XKMgo44T2JW3dW4izDwv_mR6NNooX0mxr2ZEDgwiMAeKpOIlEN3K0hlgcSN88drk2EY1H-hm051wJh05HKBt86dI3SVjKrNyVHvTSHNLfvE"/>
+</div>
+<div class="absolute -bottom-10 -right-10 hidden md:block w-64 aspect-square rounded-2xl overflow-hidden border-8 border-surface shadow-2xl">
+<img class="w-full h-full object-cover" data-alt="A close-up, high-end food photograph of a beautifully plated gourmet meal featuring fresh, colorful ingredients on a artisanal ceramic plate. The lighting is soft and natural, casting delicate shadows that emphasize the texture and quality of the dish. The setting is a minimalist, luxury dining environment, reinforcing the brand's focus on premium, curated experiences." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQsXeuudtqiuTQ8gp_sQA1dZlYK__SGnOBd0EQNgJ1nFU6t9uEp6aotHaMF4s1whJH4i6JNcQzf2GQ6w6Gn3IZiJh_LgXNf4Fgm3vPfUk6B5WvqZRKjWOM0flU4YJ77m4a6GVi6_36al3HICzyTwBbm27YsGOPuzKm-EVr-_raRRqZYl-liEtLaK2EsBi-XbcXMjRkqf4M2omGGgnE_oOXwhLbGA5yF_HgVwQ3nHqC5OcRaa6NMbyFaW4xgTqdxEHVJ_DJHaPp-rQ"/>
+</div>
+</div>
+</div>
+<div class="w-full lg:w-1/2 lg:pl-12">
+<h2 class="text-display font-display mb-sm text-primary">Discover curated experiences</h2>
+<p class="text-body-lg font-body-lg text-secondary mb-lg">Beyond just a place to stay, we offer hand-picked experiences that turn a trip into a lifelong memory. From private chefs to hidden architectural tours.</p>
+<button class="bg-primary text-white px-8 py-4 rounded-full font-semibold hover:bg-primary-container transition-all active:scale-[0.98]">Explore Experiences</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-slate-50 dark:bg-slate-900 text-teal-900 font-['Inter'] text-sm text-slate-600 full-width border-t mt-16 border-slate-200 dark:border-slate-800 shadow-none">
+<div class="max-w-[1280px] mx-auto px-6 lg:px-12 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="text-lg font-bold text-teal-900 dark:text-teal-500">LuxeStay</span>
+<p class="text-slate-500 dark:text-slate-400">© 2024 LuxeStay Global. All rights reserved.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors duration-200" href="#">Privacy</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors duration-200" href="#">Terms</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors duration-200" href="#">Sitemap</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors duration-200" href="#">Company Details</a>
+</div>
+<div class="flex gap-4">
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center hover:bg-white transition-all">
+<span class="material-symbols-outlined text-lg">language</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>
