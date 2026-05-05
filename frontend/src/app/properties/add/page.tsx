@@ -99,7 +99,7 @@ export default function AddPropertyPage() {
       data.append("advance_payment_amount", formData.advance_payment_amount);
       data.append("amenities", JSON.stringify(formData.amenities));
       
-      const enabledRoomTypes = formData.room_types
+      const roomTypesData = formData.room_types
         .filter(rt => rt.enabled)
         .map(rt => ({
           name: rt.name,
@@ -108,8 +108,8 @@ export default function AddPropertyPage() {
           price_per_month: rt.price_per_month || null
         }));
       
-      if (enabledRoomTypes.length > 0) {
-        data.append("room_types", JSON.stringify(enabledRoomTypes));
+      if (roomTypesData.length > 0) {
+        data.append("room_types", JSON.stringify(roomTypesData));
       }
 
       if (formData.image_url) data.append("image_url", formData.image_url);
