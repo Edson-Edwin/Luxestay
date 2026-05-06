@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
+import { mediaUrl } from "@/lib/config";
 
 interface Property {
   id: number;
