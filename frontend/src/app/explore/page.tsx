@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/config";
 
 interface Property {
   id: number;
@@ -46,7 +47,7 @@ export default function ExplorePage() {
     if (loc) setSearchLocation(loc);
     if (kw) setSearchKeyword(kw);
 
-    fetch("http://localhost:8000/api/properties/")
+    fetch(`${API_URL}/api/properties/`)
       .then(res => res.json())
       .then(data => {
         setProperties(data);
@@ -237,7 +238,7 @@ export default function ExplorePage() {
                     <img 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                       alt={prop.title} 
-                      src={prop.image || prop.image_url!} 
+                      src={mediaUrl(prop.image) || mediaUrl(prop.image_url)} 
                     />
                   ) : (
                     <span className="material-symbols-outlined text-4xl text-slate-400">image_not_supported</span>

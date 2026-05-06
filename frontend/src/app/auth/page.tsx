@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { API_URL } from "@/lib/config";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -22,9 +23,9 @@ export default function AuthPage() {
     e.preventDefault();
     setError("");
 
-    const url = isLogin 
-      ? "http://localhost:8000/api/auth/login/" 
-      : "http://localhost:8000/api/auth/register/";
+    const url = isLogin
+      ? `${API_URL}/api/auth/login/`
+      : `${API_URL}/api/auth/register/`;
 
     try {
       const body = isLogin 
@@ -48,7 +49,7 @@ export default function AuthPage() {
         localStorage.setItem("refresh", data.refresh);
         
         // Fetch profile to get role
-        const profileRes = await fetch("http://localhost:8000/api/auth/profile/", {
+        const profileRes = await fetch(`${API_URL}/api/auth/profile/`, {
           headers: { "Authorization": `Bearer ${data.access}` }
         });
         const profile = await profileRes.json();

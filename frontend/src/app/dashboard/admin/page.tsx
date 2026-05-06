@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_URL } from "@/lib/config";
 
 interface User {
   id: number;
@@ -30,7 +31,7 @@ export default function AdminDashboard() {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:8000/api/auth/users/", {
+        const res = await fetch(`${API_URL}/api/auth/users/`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         

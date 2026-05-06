@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { use } from "react";
+import { API_URL, mediaUrl } from "@/lib/config";
 
 interface Property {
   id: number;
@@ -52,7 +53,7 @@ export default function PropertyDetailsPage({ params }: { params: Promise<{ id: 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/properties/${id}/`)
+    fetch(`${API_URL}/api/properties/${id}/`)
       .then(res => {
         if (!res.ok) throw new Error("Property not found");
         return res.json();
@@ -91,7 +92,7 @@ export default function PropertyDetailsPage({ params }: { params: Promise<{ id: 
     
     if (confirm(`Confirm advance payment of $${property?.advance_payment_amount} to secure this booking?`)) {
         try {
-            const res = await fetch("http://localhost:8000/api/properties/bookings/", {
+            const res = await fetch(`${API_URL}/api/properties/bookings/`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -141,9 +142,9 @@ export default function PropertyDetailsPage({ params }: { params: Promise<{ id: 
   };
 
   const allImages = [
-    ...(property.image ? [property.image] : []),
-    ...(property.image_url ? [property.image_url] : []),
-    ...(property.images?.map(img => img.image) || [])
+    ...(property.image ? [mediaUrl(property.image)] : []),
+    ...(property.image_url ? [mediaUrl(property.image_url)] : []),
+    ...(property.images?.map(img => mediaUrl(img.image)) || [])
   ];
 
   return (

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { API_URL, mediaUrl } from "@/lib/config";
 
 interface Property {
   id: number;
@@ -38,7 +39,7 @@ export default function Home() {
     // ... rest of useEffect
 
     // Fetch properties
-    fetch("http://localhost:8000/api/properties/")
+    fetch(`${API_URL}/api/properties/`)
       .then(res => res.json())
       .then(data => {
         setProperties(data);
@@ -197,7 +198,7 @@ export default function Home() {
                       <img 
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                         alt={prop.title} 
-                        src={prop.image || prop.image_url!} 
+                        src={mediaUrl(prop.image) || mediaUrl(prop.image_url)} 
                       />
                     ) : (
                       <span className="material-symbols-outlined text-4xl text-slate-400">image_not_supported</span>

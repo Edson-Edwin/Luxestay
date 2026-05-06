@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_URL } from "@/lib/config";
 
 interface Booking {
   id: number;
@@ -36,7 +37,7 @@ export default function OwnerDashboard() {
     const token = localStorage.getItem("access");
     if (!token) return;
     try {
-      const bookingsRes = await fetch("http://localhost:8000/api/properties/bookings/", {
+      const bookingsRes = await fetch(`${API_URL}/api/properties/bookings/`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       
@@ -46,7 +47,7 @@ export default function OwnerDashboard() {
           return;
       }
 
-      const propertiesRes = await fetch(`http://localhost:8000/api/properties/?host_id=${localStorage.getItem('user_id')}`, {
+      const propertiesRes = await fetch(`${API_URL}/api/properties/?host_id=${localStorage.getItem('user_id')}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
 
@@ -77,7 +78,7 @@ export default function OwnerDashboard() {
   const toggleAvailability = async (propertyId: number, currentStatus: boolean) => {
     const token = localStorage.getItem("access");
     try {
-        const res = await fetch(`http://localhost:8000/api/properties/${propertyId}/`, {
+        const res = await fetch(`${API_URL}/api/properties/${propertyId}/`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",

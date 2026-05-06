@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_URL } from "@/lib/config";
 
 export default function AddPropertyPage() {
   const router = useRouter();
@@ -124,7 +125,7 @@ export default function AddPropertyPage() {
           data.append("image", imageFiles[0]);
       }
 
-      const res = await fetch("http://localhost:8000/api/properties/", {
+      const res = await fetch(`${API_URL}/api/properties/`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
