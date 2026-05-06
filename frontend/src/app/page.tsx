@@ -31,14 +31,10 @@ export default function Home() {
   const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check auth
     const token = localStorage.getItem("access");
     setIsLoggedIn(!!token);
     setUserRole(localStorage.getItem("role"));
-    
-    // ... rest of useEffect
 
-    // Fetch properties
     fetch(`${API_URL}/api/properties/`)
       .then(res => res.json())
       .then(data => {
@@ -54,7 +50,11 @@ export default function Home() {
   const handleLogout = () => {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("username");
     setIsLoggedIn(false);
+    setUserRole(null);
   };
 
   return (
@@ -183,8 +183,10 @@ export default function Home() {
               <span className="material-symbols-outlined text-6xl text-secondary mb-4">home_work</span>
               <h3 className="text-2xl font-bold text-on-surface mb-2">No properties found</h3>
               <p className="text-secondary mb-6">Be the first to list your amazing space on LuxeStay.</p>
-              {isLoggedIn ? (
+              {(userRole === 'OWNER' || userRole === 'ADMIN') ? (
                 <Link href="/properties/add" className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-container transition-all">List Your Property</Link>
+              ) : isLoggedIn ? (
+                <Link href="/explore" className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-container transition-all">Explore Properties</Link>
               ) : (
                 <Link href="/auth" className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-container transition-all">Sign In to Host</Link>
               )}

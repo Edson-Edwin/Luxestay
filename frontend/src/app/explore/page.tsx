@@ -64,7 +64,10 @@ export default function ExplorePage() {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("role");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("username");
     setIsLoggedIn(false);
+    setUserRole(null);
   };
 
   const filteredProperties = properties.filter(prop => {

@@ -47,16 +47,30 @@ export default function AuthPage() {
       if (isLogin) {
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
-        
-        // Fetch profile to get role
-        const profileRes = await fetch(`${API_URL}/api/auth/profile/`, {
-          headers: { "Authorization": `Bearer ${data.access}` }
-        });
-        const profile = await profileRes.json();
+
+        // The custom JWT endpoint returns a 'user' object directly.
+        // Fall back to profile fetch only if 'user' is missing (older API).
+        let profile = data.user;
+        if (!profile) {
+          const profileRes = await fetch(`${API_URL}/api/auth/profile/`, {
+            headers: { "Authorization": `Bearer ${data.access}` }
+          });
+          profile = await profileRes.json();
+        }
+
+        // Persist user details
         localStorage.setItem("role", profile.role);
-        localStorage.setItem("user_id", profile.id);
-        
-        router.push("/");
+        localStorage.setItem("user_id", String(profile.id));
+        localStorage.setItem("username", profile.username);
+
+        // Route based on role
+        if (profile.role === "ADMIN" || profile.is_superuser || profile.is_staff) {
+          router.push("/dashboard/admin");
+        } else if (profile.role === "OWNER") {
+          router.push("/dashboard/owner");
+        } else {
+          router.push("/");
+        }
       } else {
         setIsLogin(true);
         setError("Registration successful! Please login.");

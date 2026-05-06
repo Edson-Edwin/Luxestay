@@ -22,9 +22,13 @@ export default function AdminDashboard() {
     const token = localStorage.getItem("access");
     const role = localStorage.getItem("role");
 
-    if (!token || role !== "ADMIN") {
-      // In a real app, you'd check if role is ADMIN or if they are a superuser
-      // For now, let's assume 'ADMIN' role is set in profile
+    // Allow access if role is ADMIN, or is_staff/is_superuser flags were stored on login
+    const isAdmin =
+      role === "ADMIN" ||
+      localStorage.getItem("is_staff") === "true" ||
+      localStorage.getItem("is_superuser") === "true";
+
+    if (!token || !isAdmin) {
       router.push("/auth");
       return;
     }
@@ -62,7 +66,16 @@ export default function AdminDashboard() {
           <Link href="/" className="text-2xl font-black text-primary tracking-tighter">LuxeStay ADMIN</Link>
           <div className="flex items-center gap-6">
             <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Home</Link>
-            <button onClick={() => { localStorage.clear(); router.push("/auth"); }} className="text-sm font-bold text-error">Logout</button>
+          <button onClick={() => {
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            localStorage.removeItem("role");
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("username");
+            localStorage.removeItem("is_staff");
+            localStorage.removeItem("is_superuser");
+            router.push("/auth");
+          }} className="text-sm font-bold text-red-500 hover:text-red-700 transition-colors">Logout</button>
           </div>
         </div>
       </header>

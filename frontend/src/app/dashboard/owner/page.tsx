@@ -67,6 +67,7 @@ export default function OwnerDashboard() {
     const token = localStorage.getItem("access");
     const role = localStorage.getItem("role");
 
+    // OWNER dashboard: only accessible to OWNER role
     if (!token || role !== "OWNER") {
       router.push("/auth");
       return;
