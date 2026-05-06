@@ -72,13 +72,13 @@ export default function Home() {
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
               <>
-                {userRole === 'OWNER' && (
-                  <Link href="/dashboard/owner" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Owner Dashboard</Link>
+                {userRole === 'HOST' && (
+                  <Link href="/dashboard/host" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Host Dashboard</Link>
                 )}
                 {userRole === 'ADMIN' && (
                   <Link href="/dashboard/admin" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Admin Dashboard</Link>
                 )}
-                {(userRole === 'OWNER' || userRole === 'ADMIN') && (
+                {(userRole === 'HOST' || userRole === 'ADMIN') && (
                   <Link href="/properties/add" className="hidden lg:block text-sm font-semibold bg-primary text-white hover:bg-primary-container px-5 py-2.5 rounded-full transition-all">Add Property</Link>
                 )}
                 <button onClick={handleLogout} className="text-sm font-semibold text-secondary hover:text-primary transition-colors">Logout</button>
@@ -86,12 +86,12 @@ export default function Home() {
             ) : (
               <Link href="/auth" className="text-sm font-semibold text-primary hover:bg-slate-50 px-4 py-2 rounded-full transition-all border border-outline-variant">Sign In</Link>
             )}
-            <div className="flex items-center gap-2 p-2 border border-outline-variant rounded-full hover:shadow-md transition-shadow cursor-pointer">
+            <Link href="/profile" className="flex items-center gap-2 p-2 border border-outline-variant rounded-full hover:shadow-md transition-shadow cursor-pointer">
               <span className="material-symbols-outlined px-1">menu</span>
               <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
                 <span className="material-symbols-outlined text-slate-500">person</span>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </header>
@@ -183,7 +183,7 @@ export default function Home() {
               <span className="material-symbols-outlined text-6xl text-secondary mb-4">home_work</span>
               <h3 className="text-2xl font-bold text-on-surface mb-2">No properties found</h3>
               <p className="text-secondary mb-6">Be the first to list your amazing space on LuxeStay.</p>
-              {(userRole === 'OWNER' || userRole === 'ADMIN') ? (
+              {(userRole === 'HOST' || userRole === 'ADMIN') ? (
                 <Link href="/properties/add" className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-container transition-all">List Your Property</Link>
               ) : isLoggedIn ? (
                 <Link href="/explore" className="inline-block bg-primary text-white font-bold py-3 px-8 rounded-full hover:bg-primary-container transition-all">Explore Properties</Link>

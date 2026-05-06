@@ -46,9 +46,9 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         # Only owners or admins can create properties
-        if self.request.user.role not in ['OWNER', 'ADMIN']:
+        if self.request.user.role not in ['HOST', 'ADMIN']:
             from rest_framework.exceptions import PermissionDenied
-            raise PermissionDenied("Only owners can add properties.")
+            raise PermissionDenied("Only hosts can add properties.")
         
         property_obj = serializer.save(host=self.request.user)
         
@@ -87,7 +87,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user.role == 'ADMIN':
             return Booking.objects.all()
-        elif user.role == 'OWNER':
+        elif user.role == 'HOST':
             # Owner sees bookings for their properties
             return Booking.objects.filter(property__host=user)
         else:

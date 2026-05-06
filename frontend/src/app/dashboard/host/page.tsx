@@ -26,7 +26,7 @@ interface Property {
   property_type: string;
 }
 
-export default function OwnerDashboard() {
+export default function HostDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,8 +67,8 @@ export default function OwnerDashboard() {
     const token = localStorage.getItem("access");
     const role = localStorage.getItem("role");
 
-    // OWNER dashboard: only accessible to OWNER role
-    if (!token || role !== "OWNER") {
+    // HOST dashboard: only accessible to HOST role
+    if (!token || role !== "HOST") {
       router.push("/auth");
       return;
     }
@@ -114,7 +114,7 @@ export default function OwnerDashboard() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar */}
           <div className="w-full lg:w-64 space-y-2">
-            <h2 className="text-sm font-bold text-slate-400 tracking-widest px-4 mb-4">OWNER DASHBOARD</h2>
+            <h2 className="text-sm font-bold text-slate-400 tracking-widest px-4 mb-4 uppercase">Host Dashboard</h2>
             <button 
                 onClick={() => setActiveTab("bookings")}
                 className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${activeTab === 'bookings' ? 'bg-primary/10 text-primary' : 'text-slate-600 hover:bg-slate-50'}`}

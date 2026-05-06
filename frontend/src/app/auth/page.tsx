@@ -66,8 +66,8 @@ export default function AuthPage() {
         // Route based on role
         if (profile.role === "ADMIN" || profile.is_superuser || profile.is_staff) {
           router.push("/dashboard/admin");
-        } else if (profile.role === "OWNER") {
-          router.push("/dashboard/owner");
+        } else if (profile.role === "HOST") {
+          router.push("/dashboard/host");
         } else {
           router.push("/");
         }
@@ -130,8 +130,8 @@ export default function AuthPage() {
                 </button>
                 <button 
                   type="button"
-                  onClick={() => setFormData({...formData, role: "OWNER"})}
-                  className={`flex-1 py-3 rounded-xl border-2 transition-all font-bold ${formData.role === 'OWNER' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 text-secondary'}`}
+                  onClick={() => setFormData({...formData, role: "HOST"})}
+                  className={`flex-1 py-3 rounded-xl border-2 transition-all font-bold ${formData.role === 'HOST' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 text-secondary'}`}
                 >
                   I'm a Host
                 </button>
@@ -163,42 +163,40 @@ export default function AuthPage() {
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                   />
                 </div>
-                {formData.role === 'OWNER' && (
-                  <>
-                    <div>
-                      <label className="block text-xs font-bold text-secondary tracking-widest mb-2">FULL NAME</label>
-                      <input 
-                        required 
-                        type="text" 
-                        className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                        value={formData.full_name}
-                        placeholder="Your full legal name"
-                        onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-secondary tracking-widest mb-2">PHONE NUMBER</label>
-                      <input 
-                        required 
-                        type="tel" 
-                        className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                        value={formData.phone_number}
-                        placeholder="+1 (555) 000-0000"
-                        onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-secondary tracking-widest mb-2">BUSINESS ADDRESS</label>
-                      <input 
-                        required 
-                        type="text" 
-                        className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                        value={formData.address}
-                        placeholder="Street, City, Zip Code"
-                        onChange={(e) => setFormData({...formData, address: e.target.value})}
-                      />
-                    </div>
-                  </>
+                <div>
+                  <label className="block text-xs font-bold text-secondary tracking-widest mb-2 uppercase">Full Name</label>
+                  <input 
+                    required 
+                    type="text" 
+                    className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
+                    value={formData.full_name}
+                    placeholder="Your full legal name"
+                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-secondary tracking-widest mb-2 uppercase">Phone Number</label>
+                  <input 
+                    required 
+                    type="tel" 
+                    className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
+                    value={formData.phone_number}
+                    placeholder="+1 (555) 000-0000"
+                    onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
+                  />
+                </div>
+                {formData.role === 'HOST' && (
+                  <div>
+                    <label className="block text-xs font-bold text-secondary tracking-widest mb-2 uppercase">Business Address</label>
+                    <input 
+                      required 
+                      type="text" 
+                      className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
+                      value={formData.address}
+                      placeholder="Street, City, Zip Code"
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    />
+                  </div>
                 )}
               </>
             )}

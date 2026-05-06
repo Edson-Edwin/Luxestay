@@ -4,7 +4,7 @@ from django.db import models
 class User(AbstractUser):
     USER_ROLES = (
         ('NORMAL', 'Normal User'),
-        ('OWNER', 'Property Owner'),
+        ('HOST', 'Property Host'),
         ('ADMIN', 'Administrator'),
     )
     role = models.CharField(max_length=10, choices=USER_ROLES, default='NORMAL')

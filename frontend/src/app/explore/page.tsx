@@ -131,26 +131,26 @@ export default function ExplorePage() {
           <div className="flex items-center gap-4">
             {isLoggedIn ? (
               <>
-                {userRole === 'OWNER' && (
-                  <Link href="/dashboard/owner" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Owner Dashboard</Link>
+                {userRole === 'HOST' && (
+                  <Link href="/dashboard/host" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Host Dashboard</Link>
                 )}
                 {userRole === 'ADMIN' && (
                   <Link href="/dashboard/admin" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Admin Dashboard</Link>
                 )}
-                {(userRole === 'OWNER' || userRole === 'ADMIN') && (
+                {(userRole === 'HOST' || userRole === 'ADMIN') && (
                   <Link href="/properties/add" className="text-sm font-semibold text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-full transition-all">List your property</Link>
                 )}
                 <button onClick={handleLogout} className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Logout</button>
               </>
             ) : (
-              <Link href="/auth" className="text-sm font-semibold text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-full transition-all border border-slate-200">Sign In</Link>
+              <Link href="/auth" className="text-sm font-semibold text-primary hover:bg-slate-50 px-4 py-2 rounded-full transition-all border border-slate-200">Sign In</Link>
             )}
-            <div className="flex items-center gap-2 p-1.5 border border-slate-300 rounded-full hover:shadow-md transition-shadow cursor-pointer bg-white">
-              <span className="material-symbols-outlined px-1 text-slate-500">menu</span>
-              <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden text-slate-400">
-                <span className="material-symbols-outlined">person</span>
+            <Link href="/profile" className="flex items-center gap-2 p-2 border border-slate-200 rounded-full hover:shadow-md transition-shadow cursor-pointer bg-white">
+              <span className="material-symbols-outlined px-1 text-slate-600">menu</span>
+              <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                <span className="material-symbols-outlined text-slate-500">person</span>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </header>
