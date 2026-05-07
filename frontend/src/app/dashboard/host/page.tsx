@@ -9,6 +9,10 @@ interface Booking {
   id: number;
   property_title: string;
   payment_type: string;
+  room_type_name: string;
+  check_in: string;
+  check_out: string;
+  is_confirmed: boolean;
   user_details: {
     username: string;
     email: string;
@@ -96,6 +100,49 @@ export default function HostDashboard() {
     }
   };
 
+  const handleDelete = async (propertyId: number) => {
+    if (!confirm("Are you sure you want to delete this property? This action cannot be undone.")) return;
+    
+    const token = localStorage.getItem("access");
+    try {
+        const res = await fetch(`${API_URL}/api/properties/${propertyId}/`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        if (res.ok) {
+            fetchData();
+        } else {
+            alert("Failed to delete property.");
+        }
+    } catch (err) {
+        console.error("Delete error:", err);
+        alert("An error occurred while deleting.");
+    }
+  };
+
+  const confirmBooking = async (bookingId: number) => {
+    const token = localStorage.getItem("access");
+    try {
+        const res = await fetch(`${API_URL}/api/properties/bookings/${bookingId}/`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ is_confirmed: true })
+        });
+        if (res.ok) {
+            fetchData();
+        } else {
+            alert("Failed to confirm booking.");
+        }
+    } catch (err) {
+        console.error("Confirmation error:", err);
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
 
   return (
@@ -151,36 +198,62 @@ export default function HostDashboard() {
                       <div key={booking.id} className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
                         <div className="flex flex-col md:flex-row justify-between gap-8">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="bg-green-100 text-green-700 text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">Booked</span>
-                                <span className="text-sm text-slate-400">{new Date(booking.booked_at).toLocaleDateString()}</span>
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-2">
+                                    <span className={`text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider ${booking.is_confirmed ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                        {booking.is_confirmed ? 'Confirmed' : 'Pending Confirmation'}
+                                    </span>
+                                    <span className="text-sm text-slate-400">Booked on {new Date(booking.booked_at).toLocaleDateString()}</span>
+                                </div>
+                                {!booking.is_confirmed && (
+                                    <button 
+                                        onClick={() => confirmBooking(booking.id)}
+                                        className="text-xs font-bold bg-primary text-white px-4 py-2 rounded-full hover:bg-primary-container transition-all"
+                                    >
+                                        Confirm Booking
+                                    </button>
+                                )}
                             </div>
-                            <h3 className="text-2xl font-bold text-slate-900 mb-6">{booking.property_title}</h3>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 tracking-widest mb-1">GUEST NAME</label>
-                                    <p className="text-lg font-bold text-slate-800">{booking.user_details.full_name || booking.user_details.username}</p>
+                                    <h3 className="text-2xl font-bold text-slate-900">{booking.property_title}</h3>
+                                    <p className="text-primary font-bold text-sm uppercase tracking-tight">{booking.room_type_name || 'All-inclusive'} • {booking.payment_type} Plan</p>
                                 </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 tracking-widest mb-1">GUEST EMAIL</label>
-                                    <p className="text-lg font-bold text-slate-800">{booking.user_details.email}</p>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 tracking-widest mb-1">PHONE NUMBER</label>
-                                    <p className="text-lg font-bold text-slate-800">{booking.user_details.phone_number || "Not provided"}</p>
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-400 tracking-widest mb-1">PAYMENT PLAN</label>
-                                    <div className="flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-primary text-[18px]">payments</span>
-                                        <p className="text-lg font-bold text-primary uppercase tracking-tight">{booking.payment_type}</p>
+                                <div className="flex items-center gap-4 bg-slate-50 px-6 py-3 rounded-2xl border border-slate-100">
+                                    <div className="text-center">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Check In</p>
+                                        <p className="font-bold text-slate-800">{booking.check_in ? new Date(booking.check_in).toLocaleDateString() : 'N/A'}</p>
+                                    </div>
+                                    <div className="h-8 w-[1px] bg-slate-200"></div>
+                                    <div className="text-center">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Check Out</p>
+                                        <p className="font-bold text-slate-800">{booking.check_out ? new Date(booking.check_out).toLocaleDateString() : 'N/A'}</p>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8 border-t border-slate-100">
                                 <div>
-                                    <button className="flex items-center gap-2 text-slate-600 font-bold hover:text-primary transition-colors hover:underline">
-                                        <span className="material-symbols-outlined text-[18px]">mail</span>
-                                        Send Message
+                                    <label className="block text-[10px] font-black text-slate-400 tracking-widest mb-1 uppercase">Guest Details</label>
+                                    <p className="text-lg font-bold text-slate-800">{booking.user_details.full_name || booking.user_details.username}</p>
+                                    <p className="text-sm text-slate-500">{booking.user_details.username}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 tracking-widest mb-1 uppercase">Contact Information</label>
+                                    <div className="flex items-center gap-2 text-slate-800 font-bold">
+                                        <span className="material-symbols-outlined text-[18px] text-slate-400">mail</span>
+                                        {booking.user_details.email}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-slate-800 font-bold mt-1">
+                                        <span className="material-symbols-outlined text-[18px] text-slate-400">phone</span>
+                                        {booking.user_details.phone_number || "No phone provided"}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-md-end">
+                                    <button className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-xl font-bold hover:bg-slate-800 transition-all w-full md:w-auto justify-center">
+                                        <span className="material-symbols-outlined text-[18px]">chat</span>
+                                        Contact Guest
                                     </button>
                                 </div>
                             </div>
@@ -232,6 +305,22 @@ export default function HostDashboard() {
                                 >
                                     <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${prop.is_available ? 'left-7' : 'left-1'}`}></div>
                                 </button>
+                                <div className="flex gap-2 ml-4">
+                                    <Link 
+                                        href={`/properties/edit/${prop.id}`}
+                                        className="p-2 text-slate-400 hover:text-primary transition-colors bg-slate-50 hover:bg-primary/10 rounded-lg"
+                                        title="Edit Property"
+                                    >
+                                        <span className="material-symbols-outlined">edit</span>
+                                    </Link>
+                                    <button 
+                                        onClick={() => handleDelete(prop.id)}
+                                        className="p-2 text-slate-400 hover:text-error transition-colors bg-slate-50 hover:bg-error/10 rounded-lg"
+                                        title="Delete Property"
+                                    >
+                                        <span className="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

@@ -42,7 +42,7 @@ class PropertyViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
-            permission_classes = [permissions.IsAuthenticated] # Check role in perform_create or via separate permission
+            permission_classes = [permissions.IsAuthenticated, IsHostOrReadOnly]
         else:
             permission_classes = [permissions.AllowAny]
         return [permission() for permission in permission_classes]
@@ -54,7 +54,13 @@ class PropertyViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("Only hosts can add properties.")
         
         property_obj = serializer.save(host=self.request.user)
-        
+        self.handle_related_data(property_obj)
+
+    def perform_update(self, serializer):
+        property_obj = serializer.save()
+        self.handle_related_data(property_obj)
+
+    def handle_related_data(self, property_obj):
         # Handle multiple image uploads
         images_data = self.request.FILES.getlist('images')
         from .models import PropertyImage, RoomType
@@ -77,7 +83,10 @@ class PropertyViewSet(viewsets.ModelViewSet):
                 except:
                     pass
             
-            from .models import RoomType
+            # For updates, we might want to clear old room types or update them.
+            # Simple approach: clear and recreate if provided.
+            property_obj.room_types.all().delete()
+            
             for rt_data in room_types_data:
                 RoomType.objects.create(
                     property=property_obj,
