@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 
 export default function HomePage() {
   const [searchData, setSearchData] = useState({ location: "", keyword: "" });
-  const revealRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const revealRefs = useRef<(HTMLElement | null)[]>([]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

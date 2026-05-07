@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_URL } from "@/lib/config";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface User {
   id: number;
@@ -68,19 +70,14 @@ export default function AdminDashboard() {
   }, [router]);
 
   const handleDelete = async (userId: number) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
-    
+    if (!confirm("Are you sure? This will permanently remove the user from the system.")) return;
     const token = localStorage.getItem("access");
     try {
       const res = await fetch(`${API_URL}/api/auth/users/${userId}/`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
-      if (res.ok) {
-        setUsers(users.filter(u => u.id !== userId));
-      } else {
-        alert("Failed to delete user.");
-      }
+      if (res.ok) fetchUsers();
     } catch (err) {
       console.error("Delete error:", err);
     }
@@ -98,7 +95,6 @@ export default function AdminDashboard() {
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
-
     const token = localStorage.getItem("access");
     try {
       const res = await fetch(`${API_URL}/api/auth/users/${editingUser.id}/`, {
@@ -113,147 +109,158 @@ export default function AdminDashboard() {
       if (res.ok) {
         setEditingUser(null);
         fetchUsers();
-      } else {
-        alert("Failed to update user.");
       }
     } catch (err) {
       console.error("Update error:", err);
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div></div>;
 
   return (
-    <div className="bg-surface text-on-surface min-h-screen font-['Inter']">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-black text-primary tracking-tighter">LuxeStay ADMIN</Link>
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Home</Link>
-          <button onClick={() => {
-            localStorage.clear();
-            router.push("/auth");
-          }} className="text-sm font-bold text-red-500 hover:text-red-700 transition-colors">Logout</button>
+    <div className="bg-slate-50 min-h-screen font-['Inter']">
+      <Navbar />
+
+      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        <div className="flex flex-col lg:flex-row justify-between items-end gap-6 mb-16">
+            <div>
+                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 mb-2">Platform Command</h1>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Managing {users.length} Registered Identities</p>
+            </div>
+            <button 
+                onClick={() => { localStorage.clear(); router.push("/auth"); }}
+                className="px-6 py-3 rounded-2xl bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-widest border border-red-100 hover:bg-red-100 transition-all"
+            >
+                Terminate Session
+            </button>
+        </div>
+
+        <div className="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+                <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Member ID</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Identity</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Security Role</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Contact Matrix</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase text-right">Operations</th>
+                </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                {users.map((user) => {
+                    const isSystemAdmin = user.is_staff || user.is_superuser || user.role === 'ADMIN';
+                    return (
+                    <tr key={user.id} className="hover:bg-slate-50/30 transition-colors group">
+                        <td className="px-8 py-6">
+                            <span className="font-black text-slate-300 text-xs tracking-tighter">#00{user.id}</span>
+                        </td>
+                        <td className="px-8 py-6">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xs">
+                                    {user.username[0].toUpperCase()}
+                                </div>
+                                <div>
+                                    <p className="font-black text-slate-900 leading-none mb-1">{user.username}</p>
+                                    <p className="text-xs font-bold text-slate-400">{user.full_name || 'No legal name'}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td className="px-8 py-6">
+                            <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+                                isSystemAdmin ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 
+                                user.role === 'HOST' ? 'bg-teal-50 text-teal-600 border border-teal-100' : 
+                                'bg-slate-50 text-slate-500 border border-slate-100'
+                            }`}>
+                                {isSystemAdmin ? 'Administrator' : user.role}
+                            </span>
+                        </td>
+                        <td className="px-8 py-6">
+                            <p className="text-xs font-bold text-slate-600 mb-1">{user.email}</p>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{user.phone_number || 'No Phone Verified'}</p>
+                        </td>
+                        <td className="px-8 py-6 text-right">
+                            <div className="flex justify-end gap-2">
+                                <button 
+                                    onClick={() => handleEditClick(user)}
+                                    className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button 
+                                    onClick={() => handleDelete(user.id)}
+                                    className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                                >
+                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    );
+                })}
+                </tbody>
+            </table>
           </div>
-        </div>
-      </header>
-
-      <main className="max-w-[1440px] mx-auto px-6 py-12">
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-slate-900 mb-2">System Users</h1>
-          <p className="text-slate-500">Manage all users, hosts, and administrators.</p>
-        </div>
-
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest">ID</th>
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest">USERNAME</th>
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest">EMAIL ID</th>
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest">PHONE</th>
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest">ROLE</th>
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest">FULL NAME</th>
-                <th className="px-6 py-4 text-xs font-black text-slate-400 tracking-widest text-right">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {users.map((user) => {
-                const isSystemAdmin = user.is_staff || user.is_superuser || user.role === 'ADMIN';
-                return (
-                  <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-400">{user.id}</td>
-                    <td className="px-6 py-4 font-bold text-slate-800">{user.username}</td>
-                    <td className="px-6 py-4 text-slate-600">{user.email}</td>
-                    <td className="px-6 py-4 text-slate-600">{user.phone_number || '-'}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                        isSystemAdmin ? 'bg-purple-100 text-purple-700' : 
-                        user.role === 'HOST' ? 'bg-blue-100 text-blue-700' : 
-                        'bg-slate-100 text-slate-700'
-                      }`}>
-                        {isSystemAdmin ? 'ADMIN' : user.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-600">{user.full_name || '-'}</td>
-                    <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => handleEditClick(user)}
-                        className="text-primary font-bold hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(user.id)}
-                        className="ml-4 text-error font-bold hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
         </div>
       </main>
 
-      {/* Edit Modal */}
+      {/* Edit Overlay */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-            <h2 className="text-2xl font-bold mb-6 text-slate-900">Edit User: {editingUser.username}</h2>
-            <form onSubmit={handleUpdateUser} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-400 tracking-widest mb-2 uppercase">Full Name</label>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+          <div className="bg-white rounded-[3rem] p-12 max-w-md w-full shadow-2xl border border-white/20">
+            <div className="flex justify-between items-start mb-10">
+                <div>
+                    <h2 className="text-3xl font-black tracking-tighter text-slate-900">Modify Identity</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Editing {editingUser.username}</p>
+                </div>
+                <button onClick={() => setEditingUser(null)} className="text-slate-300 hover:text-slate-900 transition-colors">
+                    <span className="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            
+            <form onSubmit={handleUpdateUser} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Full Legal Name</label>
                 <input 
                   type="text" 
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary"
+                  className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20"
                   value={editFormData.full_name}
                   onChange={(e) => setEditFormData({...editFormData, full_name: e.target.value})}
                 />
               </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-400 tracking-widest mb-2 uppercase">Phone Number</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Phone Number</label>
                 <input 
                   type="text" 
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary"
+                  className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20"
                   value={editFormData.phone_number}
                   onChange={(e) => setEditFormData({...editFormData, phone_number: e.target.value})}
                 />
               </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-400 tracking-widest mb-2 uppercase">Role</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Access Level</label>
                 <select 
-                  className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-primary"
+                  className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 appearance-none"
                   value={editFormData.role}
                   onChange={(e) => setEditFormData({...editFormData, role: e.target.value})}
                 >
-                  <option value="NORMAL">NORMAL</option>
-                  <option value="HOST">HOST</option>
-                  <option value="ADMIN">ADMIN</option>
+                  <option value="NORMAL">Guest</option>
+                  <option value="HOST">Host</option>
+                  <option value="ADMIN">Administrator</option>
                 </select>
               </div>
-              <div className="flex gap-4 mt-8">
-                <button 
-                  type="button" 
-                  onClick={() => setEditingUser(null)}
-                  className="flex-1 py-3 font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit" 
-                  className="flex-1 py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:bg-primary-container transition-all"
-                >
-                  Save Changes
-                </button>
-              </div>
+              <button 
+                type="submit" 
+                className="w-full bg-slate-900 hover:bg-teal-600 text-white font-black py-5 rounded-[2rem] shadow-xl transition-all active:scale-[0.98] mt-6 text-sm uppercase tracking-widest"
+              >
+                Apply Changes
+              </button>
             </form>
           </div>
         </div>
       )}
+      
+      <Footer />
     </div>
   );
 }
-

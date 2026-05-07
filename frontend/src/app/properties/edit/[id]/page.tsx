@@ -192,7 +192,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div></div>;
 
   return (
     <div className="min-h-screen bg-surface py-12 px-6 font-['Inter']">
@@ -234,11 +234,11 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             <p className="text-[10px] text-slate-400 font-medium uppercase -mt-4">Enable the room categories available at your property and set their prices.</p>
             <div className="space-y-4">
               {formData.room_types.map((rt, index) => (
-                <div key={rt.name} className={`p-6 rounded-2xl border-2 transition-all ${rt.enabled ? 'border-primary bg-primary/5' : 'border-slate-100'}`}>
+                <div key={rt.name} className={`p-6 rounded-2xl border-2 transition-all ${rt.enabled ? 'border-teal-600 bg-teal-50/30' : 'border-slate-100'}`}>
                   <label className="flex items-center gap-3 mb-6 cursor-pointer">
                     <input 
                       type="checkbox" 
-                      className="w-5 h-5 rounded accent-primary" 
+                      className="w-5 h-5 rounded accent-teal-600" 
                       checked={rt.enabled} 
                       onChange={(e) => {
                         const newRTs = [...formData.room_types];
@@ -258,7 +258,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                           <input 
                             type="number" 
                             step="0.01" 
-                            className="w-full border border-slate-200 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-primary" 
+                            className="w-full border border-slate-200 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-teal-600" 
                             value={rt.price_per_night} 
                             onChange={(e) => {
                               const newRTs = [...formData.room_types];
@@ -276,7 +276,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                           <input 
                             type="number" 
                             step="0.01" 
-                            className="w-full border border-slate-200 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-primary" 
+                            className="w-full border border-slate-200 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-teal-600" 
                             value={rt.price_per_day} 
                             onChange={(e) => {
                               const newRTs = [...formData.room_types];
@@ -294,7 +294,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                           <input 
                             type="number" 
                             step="0.01" 
-                            className="w-full border border-slate-200 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-primary" 
+                            className="w-full border border-slate-200 rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-teal-600" 
                             value={rt.price_per_month} 
                             onChange={(e) => {
                               const newRTs = [...formData.room_types];
@@ -315,11 +315,11 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-500 tracking-widest uppercase">Location</label>
-              <input required type="text" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="e.g. Santorini, Greece" />
+              <input required type="text" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-600/10 focus:border-teal-600 transition-all" value={formData.location} onChange={(e) => setFormData({...formData, location: e.target.value})} placeholder="e.g. Santorini, Greece" />
             </div>
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-500 tracking-widest uppercase">Advance Payment Amount ($)</label>
-              <input required type="number" step="0.01" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" value={formData.advance_payment_amount} onChange={(e) => setFormData({...formData, advance_payment_amount: e.target.value})} placeholder="50.00" />
+              <input required type="number" step="0.01" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-600/10 focus:border-teal-600 transition-all" value={formData.advance_payment_amount} onChange={(e) => setFormData({...formData, advance_payment_amount: e.target.value})} placeholder="50.00" />
             </div>
           </div>
 
@@ -333,7 +333,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                   onClick={() => handleAmenityToggle(amenity.id)}
                   className={`flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all gap-2 ${
                     formData.amenities.includes(amenity.id)
-                      ? 'border-primary bg-primary/5 text-primary'
+                      ? 'border-teal-600 bg-teal-50 text-teal-600'
                       : 'border-slate-50 text-slate-400 hover:border-slate-200 hover:bg-slate-50'
                   }`}
                 >
@@ -346,7 +346,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
 
           <div className="space-y-2">
             <label className="block text-xs font-bold text-slate-500 tracking-widest uppercase">Description</label>
-            <textarea required rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Describe your stunning property..."></textarea>
+            <textarea required rows={4} className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-600/10 focus:border-teal-600 transition-all" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Describe your stunning property..."></textarea>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -356,7 +356,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
                 type="file" 
                 multiple 
                 accept="image/*" 
-                className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" 
+                className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-600/10 focus:border-teal-600 transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-600 hover:file:bg-teal-100" 
                 onChange={(e) => {
                   if (e.target.files) {
                       setImageFiles(Array.from(e.target.files));
@@ -367,17 +367,17 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             </div>
             <div className="space-y-2">
               <label className="block text-xs font-bold text-slate-500 tracking-widest uppercase">Update Image URL (Fallback)</label>
-              <input type="url" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://..." />
+              <input type="url" className="w-full border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teal-600/10 focus:border-teal-600 transition-all" value={formData.image_url} onChange={(e) => setFormData({...formData, image_url: e.target.value})} placeholder="https://..." />
             </div>
           </div>
 
-          <button disabled={saving} type="submit" className="w-full bg-primary hover:bg-primary-container text-white font-bold py-4 rounded-xl transition-all active:scale-[0.98] mt-8 text-lg shadow-lg shadow-primary/20">
+          <button disabled={saving} type="submit" className="w-full bg-slate-900 hover:bg-teal-600 text-white font-black py-5 rounded-2xl transition-all active:scale-[0.98] mt-8 text-sm uppercase tracking-widest shadow-xl">
             {saving ? (
                 <div className="flex items-center justify-center gap-2">
                     <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                    <span>Saving Changes...</span>
+                    <span>Processing Sanctuary...</span>
                 </div>
-            ) : "Save Changes"}
+            ) : "Update Sanctuary"}
           </button>
         </form>
       </div>

@@ -7,6 +7,14 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { API_URL, mediaUrl } from "@/lib/config";
 
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  full_name: string;
+  phone_number: string;
+}
+
 interface Property {
   id: number;
   title: string;
@@ -22,7 +30,7 @@ interface Property {
   image: string | null;
   image_url: string | null;
   host_username: string;
-  host_details: any;
+  host_details: User | null;
   amenities: string[];
   advance_payment_amount: string;
   is_available: boolean;
@@ -46,7 +54,7 @@ export default function PropertyDetailsPage({ params }: { params: Promise<{ id: 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [ownerDetails, setOwnerDetails] = useState<any>(null);
+  const [ownerDetails, setOwnerDetails] = useState<User | null>(null);
   const [paymentType, setPaymentType] = useState<string>("NIGHTLY");
   const [selectedRoomType, setSelectedRoomType] = useState<number | null>(null);
   const [checkIn, setCheckIn] = useState("");
@@ -106,9 +114,9 @@ export default function PropertyDetailsPage({ params }: { params: Promise<{ id: 
                 })
             });
             const data = await res.json();
-            if (res.ok) {
+            if (res.ok && property) {
                 setBookingSuccess(true);
-                setOwnerDetails(property?.host_details);
+                setOwnerDetails(property.host_details);
             } else {
                 alert(data.detail || "Booking failed.");
             }
