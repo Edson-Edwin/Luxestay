@@ -174,7 +174,7 @@ export default function HomePage() {
               { title: "Mountain Retreats", count: "86 Properties", img: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2070&auto=format&fit=crop", type: "CABIN" },
               { title: "Urban Penthouses", count: "42 Properties", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop", type: "PRIVATE_ROOM" }
             ].map((item, i) => (
-              <Link key={i} href={`/explore?room_type=${item.type}`} className="reveal group cursor-pointer" ref={(el) => { revealRefs.current[5 + i] = el }}>
+              <Link key={i} href={`/explore?property_type=${item.type}`} className="reveal group cursor-pointer" ref={(el) => { revealRefs.current[5 + i] = el }}>
                 <div className="aspect-[3/4] rounded-[2rem] overflow-hidden relative mb-6 shadow-lg">
                   <img src={item.img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={item.title} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>

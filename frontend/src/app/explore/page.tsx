@@ -26,7 +26,7 @@ function ExploreContent() {
   
   const [location, setLocation] = useState(searchParams.get("location") || "");
   const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
-  const [roomType, setRoomType] = useState(searchParams.get("room_type") || "");
+  const [propertyType, setPropertyType] = useState(searchParams.get("property_type") || "");
 
   const propertyTypes = [
     { id: "", label: "All Properties" },
@@ -43,7 +43,7 @@ function ExploreContent() {
       const query = new URLSearchParams();
       if (location) query.append("location", location);
       if (keyword) query.append("keyword", keyword);
-      if (roomType) query.append("room_type", roomType);
+      if (propertyType) query.append("property_type", propertyType);
 
       const res = await fetch(`${API_URL}/api/properties/?${query.toString()}`);
       const data = await res.json();
@@ -64,7 +64,7 @@ function ExploreContent() {
     const query = new URLSearchParams();
     if (location) query.append("location", location);
     if (keyword) query.append("keyword", keyword);
-    if (roomType) query.append("room_type", roomType);
+    if (propertyType) query.append("property_type", propertyType);
     router.push(`/explore?${query.toString()}`);
   };
 
@@ -117,14 +117,14 @@ function ExploreContent() {
                 <button
                     key={type.id}
                     onClick={() => {
-                        setRoomType(type.id);
+                        setPropertyType(type.id);
                         const query = new URLSearchParams(searchParams.toString());
-                        if (type.id) query.set("room_type", type.id);
-                        else query.delete("room_type");
+                        if (type.id) query.set("property_type", type.id);
+                        else query.delete("property_type");
                         router.push(`/explore?${query.toString()}`);
                     }}
                     className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
-                        roomType === type.id 
+                        propertyType === type.id 
                             ? "bg-slate-900 text-white border-slate-900" 
                             : "bg-white text-slate-400 border-slate-200 hover:border-slate-900 hover:text-slate-900"
                     }`}
@@ -195,7 +195,7 @@ function ExploreContent() {
                 onClick={() => {
                     setLocation("");
                     setKeyword("");
-                    setRoomType("");
+                    setPropertyType("");
                     router.push("/explore");
                 }}
                 className="mt-10 px-8 py-3 bg-slate-900 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-teal-600 transition-all shadow-lg active:scale-95"

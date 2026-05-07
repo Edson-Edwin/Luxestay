@@ -26,17 +26,17 @@ class PropertyViewSet(viewsets.ModelViewSet):
         if host_id:
             queryset = queryset.filter(host_id=host_id)
         
-        # Search by location and keyword
+        # Search by location, keyword, and property type
         location = self.request.query_params.get('location')
         keyword = self.request.query_params.get('keyword')
-        room_type = self.request.query_params.get('room_type')
+        property_type = self.request.query_params.get('property_type')
 
         if location:
             queryset = queryset.filter(location__icontains=location)
         if keyword:
             queryset = queryset.filter(models.Q(title__icontains=keyword) | models.Q(description__icontains=keyword))
-        if room_type:
-            queryset = queryset.filter(room_types__name=room_type).distinct()
+        if property_type:
+            queryset = queryset.filter(property_type=property_type)
             
         return queryset
 
