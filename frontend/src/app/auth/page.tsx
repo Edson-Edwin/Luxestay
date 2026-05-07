@@ -202,6 +202,31 @@ export default function AuthPage() {
                             onChange={(e) => setFormData({...formData, full_name: e.target.value})}
                         />
                     </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Phone Number</label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-300">call</span>
+                            <input 
+                                required 
+                                type="tel" 
+                                className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                                value={formData.phone_number}
+                                placeholder="+1 234 567 890"
+                                onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
+                            />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Current Address</label>
+                        <input 
+                            required 
+                            type="text" 
+                            className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                            value={formData.address}
+                            placeholder="123 Street, City, Country"
+                            onChange={(e) => setFormData({...formData, address: e.target.value})}
+                        />
+                    </div>
                   </>
                 )}
 
