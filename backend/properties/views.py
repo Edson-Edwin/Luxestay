@@ -11,14 +11,14 @@ class IsHostOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return obj.host == request.user
+        return obj.host_id == request.user.id
 
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all().order_by('-created_at')
     serializer_class = PropertySerializer
-    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    parser_classes = (JSONParser, MultiPartParser, FormParser)
 
     def get_queryset(self):
         queryset = Property.objects.all().order_by('-created_at')
@@ -55,6 +55,20 @@ class PropertyViewSet(viewsets.ModelViewSet):
         
         property_obj = serializer.save(host=self.request.user)
         self.handle_related_data(property_obj)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if not serializer.is_valid():
+            print(f"DEBUG: Validation errors: {serializer.errors}")
+            return Response(serializer.errors, status=400)
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
     def perform_update(self, serializer):
         property_obj = serializer.save()

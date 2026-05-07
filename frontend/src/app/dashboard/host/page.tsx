@@ -94,6 +94,9 @@ export default function HostDashboard() {
         if (res.ok) {
             // Refresh data
             fetchData();
+        } else {
+            const errData = await res.json();
+            console.error("Toggle availability failed:", errData);
         }
     } catch (err) {
         console.error("Failed to toggle availability:", err);

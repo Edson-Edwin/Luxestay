@@ -32,7 +32,7 @@ class Property(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if self.image:
+        if self.image and (not self.pk or getattr(self.image, '_committed', False) is False):
             self.image = compress_image(self.image)
         super().save(*args, **kwargs)
 
@@ -67,7 +67,7 @@ class PropertyImage(models.Model):
     image = models.ImageField(upload_to='properties/gallery/')
     
     def save(self, *args, **kwargs):
-        if self.image:
+        if self.image and (not self.pk or getattr(self.image, '_committed', False) is False):
             self.image = compress_image(self.image)
         super().save(*args, **kwargs)
 
