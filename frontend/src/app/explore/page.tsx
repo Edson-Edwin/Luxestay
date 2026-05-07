@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { API_URL } from "@/lib/config";
-import { mediaUrl } from "@/lib/config";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { API_URL, mediaUrl } from "@/lib/config";
 
 interface Property {
   id: number;
@@ -13,266 +14,209 @@ interface Property {
   property_type: string;
   price_per_night: string;
   location: string;
-  image: string | null;
-  image_url: string | null;
-  host_username: string;
-  advance_payment_amount: string;
-  is_available: boolean;
-  room_types: { name: string }[];
+  image: string;
+  image_url: string;
 }
 
-export default function ExplorePage() {
+function ExploreContent() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchLocation, setSearchLocation] = useState("");
-  const [searchKeyword, setSearchKeyword] = useState("");
-  const [propertyType, setPropertyType] = useState("ALL");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
-  const [roomType, setRoomType] = useState("ALL");
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  const [location, setLocation] = useState(searchParams.get("location") || "");
+  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
+  const [roomType, setRoomType] = useState(searchParams.get("room_type") || "");
 
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const propertyTypes = [
+    { id: "", label: "All Properties" },
+    { id: "VILLA", label: "Villas" },
+    { id: "PRIVATE_ROOM", label: "Private Rooms" },
+    { id: "BEACHFRONT", label: "Beachfront" },
+    { id: "CABIN", label: "Cabins" },
+    { id: "CASTLE", label: "Castles" },
+  ];
 
-  useEffect(() => {
-    const token = localStorage.getItem("access");
-    setIsLoggedIn(!!token);
-    setUserRole(localStorage.getItem("role"));
-    
-    // Parse URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const loc = urlParams.get('location');
-    const kw = urlParams.get('keyword');
-    if (loc) setSearchLocation(loc);
-    if (kw) setSearchKeyword(kw);
+  const fetchProperties = async () => {
+    setLoading(true);
+    try {
+      const query = new URLSearchParams();
+      if (location) query.append("location", location);
+      if (keyword) query.append("keyword", keyword);
+      if (roomType) query.append("room_type", roomType);
 
-    fetch(`${API_URL}/api/properties/`)
-      .then(res => res.json())
-      .then(data => {
-        setProperties(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Failed to fetch properties:", err);
-        setLoading(false);
-      });
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("role");
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("username");
-    setIsLoggedIn(false);
-    setUserRole(null);
+      const res = await fetch(`${API_URL}/api/properties/?${query.toString()}`);
+      const data = await res.json();
+      setProperties(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filteredProperties = properties.filter(prop => {
-    if (searchLocation && !prop.location.toLowerCase().includes(searchLocation.toLowerCase())) {
-      return false;
-    }
-    if (searchKeyword && !prop.title.toLowerCase().includes(searchKeyword.toLowerCase()) && !prop.description.toLowerCase().includes(searchKeyword.toLowerCase())) {
-      return false;
-    }
-    if (propertyType !== "ALL" && prop.property_type !== propertyType) {
-      return false;
-    }
-    if (roomType !== "ALL" && !prop.room_types?.some(rt => rt.name === roomType)) {
-      return false;
-    }
-    if (minPrice && parseFloat(prop.price_per_night) < parseFloat(minPrice)) {
-      return false;
-    }
-    if (maxPrice && parseFloat(prop.price_per_night) > parseFloat(maxPrice)) {
-      return false;
-    }
-    return true;
-  });
+  useEffect(() => {
+    fetchProperties();
+  }, [searchParams]);
+
+  const handleFilterSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const query = new URLSearchParams();
+    if (location) query.append("location", location);
+    if (keyword) query.append("keyword", keyword);
+    if (roomType) query.append("room_type", roomType);
+    router.push(`/explore?${query.toString()}`);
+  };
 
   return (
-    <div className="bg-surface text-on-surface min-h-screen font-['Inter']">
-      {/* Main Header with Search */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-[1440px] mx-auto px-6 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="text-2xl font-black text-primary tracking-tighter">LuxeStay</Link>
-            <Link href="/" className="hidden md:block text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Home</Link>
-          </div>
-          
-          <div className="hidden md:flex items-center bg-white border border-slate-300 rounded-full shadow-sm hover:shadow-md transition-shadow duration-200 p-1 pl-6">
-            <div className="flex flex-col border-r border-slate-200 pr-4">
-              <span className="text-[10px] font-bold text-slate-800 tracking-wider">Location</span>
-              <input 
-                type="text" 
-                placeholder="Where are you going?" 
-                className="outline-none text-sm text-slate-600 w-40 bg-transparent placeholder-slate-400"
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-              />
-            </div>
-            <div className="flex flex-col border-r border-slate-200 pr-4 pl-4">
-              <span className="text-[10px] font-bold text-slate-800 tracking-wider">Keyword</span>
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="outline-none text-sm text-slate-600 w-32 bg-transparent placeholder-slate-400"
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-              />
-            </div>
-            <button className="bg-primary hover:bg-primary-container text-white w-10 h-10 ml-2 rounded-full flex items-center justify-center transition-colors">
-              <span className="material-symbols-outlined text-lg">search</span>
-            </button>
-          </div>
+    <div className="min-h-screen bg-white">
+      <Navbar />
 
-          <div className="flex items-center gap-4">
-            {isLoggedIn ? (
-              <>
-                {userRole === 'HOST' && (
-                  <Link href="/dashboard/host" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Host Dashboard</Link>
-                )}
-                {userRole === 'ADMIN' && (
-                  <Link href="/dashboard/admin" className="hidden lg:block text-sm font-semibold text-slate-600 hover:text-primary px-3 py-2 rounded-full transition-all">Admin Dashboard</Link>
-                )}
-                {(userRole === 'HOST' || userRole === 'ADMIN') && (
-                  <Link href="/properties/add" className="text-sm font-semibold text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-full transition-all">List your property</Link>
-                )}
-                <button onClick={handleLogout} className="text-sm font-semibold text-slate-600 hover:text-primary transition-colors">Logout</button>
-              </>
-            ) : (
-              <Link href="/auth" className="text-sm font-semibold text-primary hover:bg-slate-50 px-4 py-2 rounded-full transition-all border border-slate-200">Sign In</Link>
-            )}
-            <Link href="/profile" className="flex items-center gap-2 p-2 border border-slate-200 rounded-full hover:shadow-md transition-shadow cursor-pointer bg-white">
-              <span className="material-symbols-outlined px-1 text-slate-600">menu</span>
-              <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
-                <span className="material-symbols-outlined text-slate-500">person</span>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Filter Bar */}
-      <div className="border-b border-slate-200 bg-white">
-        <div className="max-w-[1440px] mx-auto px-6 py-4 flex items-center gap-3 overflow-x-auto hide-scrollbar">
-          <button className="flex items-center gap-2 border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium hover:border-slate-800 transition-colors whitespace-nowrap bg-white">
-            <span className="material-symbols-outlined text-[18px]">tune</span> Filters
-          </button>
-          <div className="h-6 w-px bg-slate-300 mx-1"></div>
-          <div className="flex items-center gap-2 border border-slate-300 rounded-lg px-2 py-1 bg-white">
-            <span className="text-sm font-medium text-slate-600 pl-2">Min $</span>
-            <input 
-              type="number" 
-              className="w-16 outline-none text-sm" 
-              value={minPrice} 
-              onChange={e => setMinPrice(e.target.value)} 
-              placeholder="0"
-            />
-            <span className="text-sm font-medium text-slate-600">- Max $</span>
-            <input 
-              type="number" 
-              className="w-16 outline-none text-sm" 
-              value={maxPrice} 
-              onChange={e => setMaxPrice(e.target.value)} 
-              placeholder="Any"
-            />
-          </div>
-          <select 
-            className="border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium hover:border-slate-800 transition-colors bg-white outline-none"
-            value={propertyType}
-            onChange={(e) => setPropertyType(e.target.value)}
-          >
-            <option value="ALL">All Types</option>
-            <option value="HOSTEL">Hostel</option>
-            <option value="PRIVATE_ROOM">Private Room</option>
-            <option value="VILLA">Villa</option>
-            <option value="BEACHFRONT">Beachfront</option>
-            <option value="CABIN">Cabin</option>
-            <option value="CASTLE">Castle</option>
-          </select>
-          <select 
-            className="border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium hover:border-slate-800 transition-colors bg-white outline-none"
-            value={roomType}
-            onChange={(e) => setRoomType(e.target.value)}
-          >
-            <option value="ALL">All Rooms</option>
-            <option value="DORMITORY">Dormitory</option>
-            <option value="DOUBLE">Double</option>
-            <option value="SINGLE">Single</option>
-          </select>
-          <button className="flex items-center gap-2 border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium hover:border-slate-800 transition-colors whitespace-nowrap bg-white">
-            Amenities <span className="material-symbols-outlined text-[18px]">expand_more</span>
-          </button>
-          <button className="flex items-center gap-2 border border-slate-300 rounded-lg px-4 py-2 text-sm font-medium hover:border-slate-800 transition-colors whitespace-nowrap bg-white ml-auto">
-            <span className="material-symbols-outlined text-[18px] text-teal-600">bolt</span> Instant Book
-          </button>
-        </div>
-      </div>
-
-      <main className="max-w-[1440px] mx-auto px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900">
-            {searchLocation ? `Stays in ${searchLocation}` : `Over ${properties.length > 300 ? '300' : properties.length} stays available`}
-          </h1>
-          <p className="text-slate-500 mt-1">Explore curated premium properties and luxury apartments.</p>
+      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        {/* Header Section */}
+        <div className="mb-16">
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 mb-4">Explore our collection</h1>
+          <p className="text-slate-500 font-medium max-w-xl leading-relaxed">
+            Discover a curated selection of extraordinary stays, from architectural marvels to hidden coastal gems.
+          </p>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : filteredProperties.length === 0 ? (
-          <div className="text-center py-20 border border-dashed border-slate-300 rounded-2xl">
-            <h3 className="text-xl font-bold text-slate-800 mb-2">No properties found</h3>
-            <p className="text-slate-500">Try adjusting your search or filters.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProperties.map((prop) => (
-              <div 
-                key={prop.id} 
-                className="group cursor-pointer flex flex-col"
-                onClick={() => router.push(`/properties/${prop.id}`)}
-              >
-                <div className="aspect-[4/3] rounded-xl overflow-hidden mb-3 relative bg-slate-200 flex items-center justify-center">
-                  {(prop.image || prop.image_url) ? (
-                    <img 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                      alt={prop.title} 
-                      src={mediaUrl(prop.image) || mediaUrl(prop.image_url)} 
+        {/* Integrated Filter Bar */}
+        <div className="mb-16 space-y-8">
+            <form onSubmit={handleFilterSubmit} className="flex flex-col md:flex-row gap-4 p-4 rounded-[2rem] bg-slate-50 border border-slate-100 shadow-sm">
+                <div className="flex-1 flex items-center gap-4 px-6 py-2 border-r border-slate-200">
+                    <span className="material-symbols-outlined text-teal-600 font-bold">location_on</span>
+                    <input 
+                        type="text" 
+                        placeholder="Anywhere" 
+                        className="bg-transparent border-none outline-none text-slate-900 font-bold w-full placeholder:text-slate-400"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
                     />
-                  ) : (
-                    <span className="material-symbols-outlined text-4xl text-slate-400">image_not_supported</span>
-                  )}
-                  {!prop.is_available && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10 backdrop-blur-[2px]">
-                        <span className="bg-white/90 text-slate-900 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-xl">Not Available</span>
-                    </div>
-                  )}
-                  <button className="absolute top-3 right-3 text-white drop-shadow-md hover:scale-110 transition-transform z-20" onClick={(e) => { e.stopPropagation(); /* toggle favorite */ }}>
-                    <span className="material-symbols-outlined text-3xl font-light">favorite</span>
-                  </button>
                 </div>
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold text-slate-900 truncate pr-4">{prop.title}</h3>
-                  <div className="flex items-center gap-1 text-sm font-medium text-slate-900 shrink-0">
-                    <span className="material-symbols-outlined text-sm text-yellow-500">star</span>
-                    {(Math.random() * (5 - 4.5) + 4.5).toFixed(2)}
-                  </div>
+                <div className="flex-1 flex items-center gap-4 px-6 py-2">
+                    <span className="material-symbols-outlined text-teal-600 font-bold">search</span>
+                    <input 
+                        type="text" 
+                        placeholder="Search keywords..." 
+                        className="bg-transparent border-none outline-none text-slate-900 font-bold w-full placeholder:text-slate-400"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
                 </div>
-                <p className="text-slate-500 text-sm">{prop.location}</p>
-                <p className="text-slate-500 text-sm mb-1">{prop.property_type.replace('_', ' ')}</p>
-                <p className="text-slate-900 font-semibold mt-1">
-                  ${prop.price_per_night} <span className="font-normal text-slate-500 text-sm">/ night</span>
-                </p>
+                <button 
+                    type="submit"
+                    className="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black text-sm hover:bg-teal-600 transition-all active:scale-95"
+                >
+                    Search Stays
+                </button>
+            </form>
+
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-2">
+                {propertyTypes.map((type) => (
+                <button
+                    key={type.id}
+                    onClick={() => {
+                        setRoomType(type.id);
+                        const query = new URLSearchParams(searchParams.toString());
+                        if (type.id) query.set("room_type", type.id);
+                        else query.delete("room_type");
+                        router.push(`/explore?${query.toString()}`);
+                    }}
+                    className={`px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
+                        roomType === type.id 
+                            ? "bg-slate-900 text-white border-slate-900" 
+                            : "bg-white text-slate-400 border-slate-200 hover:border-slate-900 hover:text-slate-900"
+                    }`}
+                >
+                    {type.label}
+                </button>
+                ))}
+            </div>
+        </div>
+
+        {/* Property Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-[4/5] bg-slate-100 rounded-[2rem] mb-6"></div>
+                <div className="h-6 bg-slate-100 rounded-full w-3/4 mb-4"></div>
+                <div className="h-4 bg-slate-100 rounded-full w-1/2"></div>
               </div>
             ))}
           </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+            {properties.map((prop) => (
+              <Link href={`/properties/${prop.id}`} key={prop.id} className="group block">
+                <div className="aspect-[4/5] rounded-[2rem] overflow-hidden relative mb-6 bg-slate-50 border border-slate-100 shadow-sm transition-shadow hover:shadow-xl">
+                  <img 
+                    src={mediaUrl(prop.image || prop.image_url)} 
+                    alt={prop.title}
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                  />
+                  <div className="absolute top-6 left-6">
+                    <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-900 shadow-sm border border-slate-100">
+                      {prop.property_type.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="px-2">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-xl font-black tracking-tight text-slate-900 group-hover:text-teal-600 transition-colors">{prop.title}</h3>
+                    <div className="flex items-center gap-1 font-black text-slate-900 text-xs">
+                        <span className="material-symbols-outlined text-amber-400 text-sm">star</span>
+                        4.9
+                    </div>
+                  </div>
+                  <p className="text-slate-400 text-xs font-bold flex items-center gap-1 mb-4 uppercase tracking-widest">
+                    <span className="material-symbols-outlined text-[14px]">location_on</span>
+                    {prop.location}
+                  </p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-2xl font-black text-slate-900">${prop.price_per_night}</span>
+                    <span className="text-slate-400 text-[10px] font-black uppercase tracking-widest">/ night</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!loading && properties.length === 0 && (
+          <div className="py-32 text-center rounded-[3rem] border-2 border-dashed border-slate-100">
+            <span className="material-symbols-outlined text-5xl text-slate-200 mb-6 font-thin">search_off</span>
+            <h3 className="text-xl font-black text-slate-800">No properties found</h3>
+            <p className="text-slate-400 max-w-xs mx-auto mt-2 text-sm font-medium">Try refining your location or keyword to explore more of our collection.</p>
+            <button 
+                onClick={() => {
+                    setLocation("");
+                    setKeyword("");
+                    setRoomType("");
+                    router.push("/explore");
+                }}
+                className="mt-10 px-8 py-3 bg-slate-900 text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-teal-600 transition-all shadow-lg active:scale-95"
+            >
+                Clear all filters
+            </button>
+          </div>
         )}
       </main>
+
+      <Footer />
     </div>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+    </div>}>
+      <ExploreContent />
+    </Suspense>
   );
 }

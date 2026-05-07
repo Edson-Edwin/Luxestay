@@ -17,10 +17,12 @@ export default function AuthPage() {
     address: ""
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
 
     const url = isLogin
@@ -48,8 +50,6 @@ export default function AuthPage() {
         localStorage.setItem("access", data.access);
         localStorage.setItem("refresh", data.refresh);
 
-        // The custom JWT endpoint returns a 'user' object directly.
-        // Fall back to profile fetch only if 'user' is missing (older API).
         let profile = data.user;
         if (!profile) {
           const profileRes = await fetch(`${API_URL}/api/auth/profile/`, {
@@ -58,12 +58,10 @@ export default function AuthPage() {
           profile = await profileRes.json();
         }
 
-        // Persist user details
         localStorage.setItem("role", profile.role);
         localStorage.setItem("user_id", String(profile.id));
         localStorage.setItem("username", profile.username);
 
-        // Route based on role
         if (profile.role === "ADMIN" || profile.is_superuser || profile.is_staff) {
           router.push("/dashboard/admin");
         } else if (profile.role === "HOST") {
@@ -73,192 +71,175 @@ export default function AuthPage() {
         }
       } else {
         setIsLogin(true);
-        setError("Registration successful! Please login.");
+        setError("Success! Please sign in with your credentials.");
       }
     } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+      setError(err.message || "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex text-on-surface">
-      {/* Left side: Beautiful Image */}
-      <div className="hidden lg:block lg:w-1/2 relative bg-black">
-        <img 
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMHaeFauVuldcybGGoLeUM_e3FcTRGrgaYBAykV2WMQ-o-mYI1jda14UArHhZ1ACz4fOSRl1yEvymk9ZKHwPMq8sphYXmyY9mRtXzJq1QfVqZkfcPtXSO00f4SqWUiRbRxuXcV2msxmtiiRAtgjfVBq04HBRdNbA0Qkc0-PEfT58UWn5PDEpquDdBuoSHjyc5hAIwJsWxiCNuVktqAZwHLEZst2XS9S0a0_hkrY89yrv1re1eYtKYKIJ54saJnRCfQ4FF2nqwD0Yc" 
-          className="absolute inset-0 w-full h-full object-cover opacity-80"
-          alt="Luxury Stay"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-        <div className="absolute bottom-16 left-16 text-white max-w-lg">
-          <h1 className="text-5xl font-bold mb-4 font-display">LuxeStay</h1>
-          <p className="text-xl opacity-90">Unlock exclusive access to the world's most breathtaking luxury rentals and experiences.</p>
+    <div className="min-h-screen flex bg-slate-50 font-['Inter']">
+      {/* Visual Side */}
+      <div className="hidden lg:block lg:w-1/2 relative overflow-hidden bg-slate-900">
+        <div className="absolute inset-0 z-0 scale-105">
+            <img 
+              src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop" 
+              className="w-full h-full object-cover opacity-60 mix-blend-luminosity"
+              alt="Luxury"
+            />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-tr from-slate-900 via-slate-900/40 to-transparent"></div>
+        
+        <div className="relative z-10 h-full flex flex-col justify-between p-16">
+          <Link href="/" className="flex items-center gap-2 group w-fit">
+            <div className="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center text-white">
+                <span className="material-symbols-outlined font-bold">villa</span>
+            </div>
+            <span className="text-2xl font-black tracking-tighter text-white">LuxeStay</span>
+          </Link>
+
+          <div className="max-w-md">
+            <h1 className="text-5xl font-black text-white tracking-tighter leading-tight mb-6">
+                Your journey into the <span className="text-teal-400">extraordinary</span> starts here.
+            </h1>
+            <p className="text-slate-400 text-lg">
+                Join our exclusive community and unlock access to the world's most breathtaking sanctuaries.
+            </p>
+          </div>
+
+          <p className="text-slate-500 text-sm font-bold uppercase tracking-widest">
+            © 2026 LuxeStay International
+          </p>
         </div>
       </div>
 
-      {/* Right side: Form */}
-      <div className="w-full lg:w-1/2 bg-surface flex items-center justify-center p-8 lg:p-12 relative overflow-y-auto">
-        <Link href="/" className="absolute top-8 right-8 text-secondary hover:text-primary transition-colors flex items-center gap-2">
-          <span className="material-symbols-outlined">close</span>
+      {/* Form Side */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-24 bg-white relative">
+        <Link href="/" className="absolute top-12 right-12 w-12 h-12 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-all">
+            <span className="material-symbols-outlined">close</span>
         </Link>
 
-        <div className="w-full max-w-md my-12">
-          <div className="mb-10 text-center lg:text-left">
-            <h2 className="text-4xl font-bold text-primary mb-3">
-              {isLogin ? "Welcome back" : "Create an account"}
+        <div className="w-full max-w-md">
+          <div className="mb-12">
+            <h2 className="text-4xl font-black text-slate-900 tracking-tighter mb-4">
+              {isLogin ? "Welcome back" : "Create Account"}
             </h2>
-            <p className="text-secondary text-lg">
-              {isLogin ? "Please enter your details to sign in." : "Start your luxury journey today."}
+            <p className="text-slate-400 font-bold text-sm uppercase tracking-widest">
+              {isLogin ? "Sign in to manage your sanctuary" : "Start your journey today"}
             </p>
           </div>
 
           {error && (
-            <div className={`p-4 rounded-xl mb-6 text-sm ${error.includes("successful") ? 'bg-primary-container text-on-primary-container' : 'bg-error-container text-on-error-container'}`}>
-              {error}
+            <div className={`p-5 rounded-2xl mb-8 flex items-center gap-3 border ${error.includes("Success") ? 'bg-teal-50 border-teal-100 text-teal-700' : 'bg-red-50 border-red-100 text-red-700'}`}>
+              <span className="material-symbols-outlined text-lg">{error.includes("Success") ? 'verified' : 'error'}</span>
+              <p className="text-sm font-bold">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
-              <div className="flex gap-4 mb-4">
+              <div className="flex p-1 bg-slate-50 rounded-2xl mb-8">
                 <button 
                   type="button"
                   onClick={() => setFormData({...formData, role: "NORMAL"})}
-                  className={`flex-1 py-3 rounded-xl border-2 transition-all font-bold ${formData.role === 'NORMAL' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 text-secondary'}`}
+                  className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${formData.role === 'NORMAL' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
-                  I'm a Guest
+                  Guest
                 </button>
                 <button 
                   type="button"
                   onClick={() => setFormData({...formData, role: "HOST"})}
-                  className={`flex-1 py-3 rounded-xl border-2 transition-all font-bold ${formData.role === 'HOST' ? 'border-primary bg-primary/5 text-primary' : 'border-slate-200 text-secondary'}`}
+                  className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${formData.role === 'HOST' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                 >
-                  I'm a Host
+                  Host
                 </button>
               </div>
             )}
 
-            <div>
-              <label className="block text-xs font-bold text-secondary tracking-widest mb-2">USERNAME</label>
-              <input 
-                required 
-                type="text" 
-                className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                value={formData.username}
-                placeholder="Enter your username"
-                onChange={(e) => setFormData({...formData, username: e.target.value})}
-              />
-            </div>
+            <div className="space-y-4">
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Username</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-300">person</span>
+                        <input 
+                            required 
+                            type="text" 
+                            className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                            value={formData.username}
+                            placeholder="username"
+                            onChange={(e) => setFormData({...formData, username: e.target.value})}
+                        />
+                    </div>
+                </div>
 
-            {!isLogin && (
-              <>
-                <div>
-                  <label className="block text-xs font-bold text-secondary tracking-widest mb-2">EMAIL</label>
-                  <input 
-                    required 
-                    type="email" 
-                    className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                    value={formData.email}
-                    placeholder="Enter your email"
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-secondary tracking-widest mb-2 uppercase">Full Name</label>
-                  <input 
-                    required 
-                    type="text" 
-                    className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                    value={formData.full_name}
-                    placeholder="Your full legal name"
-                    onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-secondary tracking-widest mb-2 uppercase">Phone Number</label>
-                  <input 
-                    required 
-                    type="tel" 
-                    className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                    value={formData.phone_number}
-                    placeholder="+1 (555) 000-0000"
-                    onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
-                  />
-                </div>
-                {formData.role === 'HOST' && (
-                  <div>
-                    <label className="block text-xs font-bold text-secondary tracking-widest mb-2 uppercase">Business Address</label>
-                    <input 
-                      required 
-                      type="text" 
-                      className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                      value={formData.address}
-                      placeholder="Street, City, Zip Code"
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
-                    />
-                  </div>
+                {!isLogin && (
+                  <>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Email Address</label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-300">mail</span>
+                            <input 
+                                required 
+                                type="email" 
+                                className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                                value={formData.email}
+                                placeholder="email@address.com"
+                                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            />
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Full Name</label>
+                        <input 
+                            required 
+                            type="text" 
+                            className="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                            value={formData.full_name}
+                            placeholder="John Doe"
+                            onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                        />
+                    </div>
+                  </>
                 )}
-              </>
-            )}
 
-            <div>
-              <label className="block text-xs font-bold text-secondary tracking-widest mb-2">PASSWORD</label>
-              <input 
-                required 
-                type="password" 
-                className="w-full border-b-2 border-outline-variant bg-transparent px-2 py-3 focus:outline-none focus:border-primary transition-colors text-lg"
-                value={formData.password}
-                placeholder="••••••••"
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-              />
+                <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Password</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-300">lock</span>
+                        <input 
+                            required 
+                            type="password" 
+                            className="w-full bg-slate-50 border-none rounded-2xl pl-12 pr-6 py-4 font-bold text-sm text-slate-900 outline-none focus:ring-2 focus:ring-teal-500/20 transition-all"
+                            value={formData.password}
+                            placeholder="••••••••"
+                            onChange={(e) => setFormData({...formData, password: e.target.value})}
+                        />
+                    </div>
+                </div>
             </div>
 
             <button 
               type="submit" 
-              className="w-full bg-primary hover:bg-primary-container text-white font-bold text-lg py-4 rounded-2xl transition-all active:scale-[0.98] mt-8 shadow-lg"
+              disabled={loading}
+              className="w-full bg-slate-900 hover:bg-teal-600 text-white font-black text-sm uppercase tracking-widest py-5 rounded-2xl transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98] mt-8"
             >
-              {isLogin ? "Sign In" : "Sign Up"}
+              {loading ? "Authenticating..." : (isLogin ? "Sign In" : "Create Account")}
             </button>
           </form>
 
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-outline-variant"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-surface text-secondary">Or continue with</span>
-              </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => alert("Google OAuth integration pending client credentials configuration")}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-              >
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
-                <span className="font-bold text-sm text-slate-700">Google</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => alert("Microsoft OAuth integration pending client credentials configuration")}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-              >
-                <img src="https://www.svgrepo.com/show/448234/microsoft.svg" alt="Microsoft" className="w-5 h-5" />
-                <span className="font-bold text-sm text-slate-700">Microsoft</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-10 text-center text-secondary">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-            <button 
-              onClick={() => { setIsLogin(!isLogin); setError(""); }}
-              className="text-primary font-bold hover:underline"
-            >
-              {isLogin ? "Sign up" : "Sign in"}
-            </button>
+          <div className="mt-12 text-center">
+            <p className="text-slate-400 font-bold text-sm">
+                {isLogin ? "New to LuxeStay?" : "Already have an account?"}{" "}
+                <button 
+                  onClick={() => { setIsLogin(!isLogin); setError(""); }}
+                  className="text-teal-600 font-black hover:underline ml-1"
+                >
+                  {isLogin ? "Apply Now" : "Sign In"}
+                </button>
+            </p>
           </div>
         </div>
       </div>
