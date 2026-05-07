@@ -167,6 +167,15 @@ export default function HostDashboard() {
             >
                 Add Sanctuary
             </Link>
+            <button 
+                onClick={() => {
+                  localStorage.clear();
+                  router.push("/auth");
+                }}
+                className="w-full text-center px-6 py-4 rounded-2xl bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-widest hover:bg-red-100 transition-all border border-red-100 mt-4"
+            >
+                Terminate Session
+            </button>
           </div>
 
           {/* Dynamic Content Area */}

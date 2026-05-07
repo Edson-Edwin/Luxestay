@@ -55,12 +55,23 @@ export default function GuestDashboard() {
                 <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 mb-2">My Journeys</h1>
                 <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Managing {bookings.length} Future & Past Stays</p>
             </div>
-            <Link 
-                href="/explore"
-                className="px-8 py-4 rounded-[2rem] bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-teal-600 transition-all shadow-xl"
-            >
-                Find Next Escape
-            </Link>
+            <div className="flex gap-4">
+                <Link 
+                    href="/explore"
+                    className="px-8 py-4 rounded-[2rem] bg-slate-900 text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-teal-600 transition-all shadow-xl"
+                >
+                    Find Next Escape
+                </Link>
+                <button 
+                    onClick={() => {
+                        localStorage.clear();
+                        window.location.href = "/auth";
+                    }}
+                    className="px-6 py-4 rounded-[2rem] bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-widest border border-red-100 hover:bg-red-100 transition-all"
+                >
+                    Logout
+                </button>
+            </div>
         </div>
 
         {bookings.length === 0 ? (

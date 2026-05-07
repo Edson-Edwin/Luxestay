@@ -74,6 +74,19 @@ export default function Navbar() {
               >
                 {localStorage.getItem("username")?.[0].toUpperCase()}
               </Link>
+              <button 
+                onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/auth";
+                }}
+                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                  scrolled || pathname !== "/" 
+                    ? "bg-red-50 text-red-600 border-red-100 hover:bg-red-100" 
+                    : "bg-white/10 text-white border-white/20 hover:bg-red-500 hover:text-white hover:border-red-500"
+                }`}
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <Link 
