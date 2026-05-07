@@ -13,12 +13,12 @@ class IsHostOrReadOnly(permissions.BasePermission):
             return True
         return obj.host == request.user
 
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all().order_by('-created_at')
     serializer_class = PropertySerializer
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     def get_queryset(self):
         queryset = Property.objects.all().order_by('-created_at')
