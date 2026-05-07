@@ -118,33 +118,55 @@ export default function AdminDashboard() {
   if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div></div>;
 
   return (
-    <div className="bg-slate-50 min-h-screen font-['Inter']">
+    <div className="bg-white min-h-screen font-['Inter'] selection:bg-teal-100 selection:text-teal-900">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-6 pt-32 pb-24">
-        <div className="flex flex-col lg:flex-row justify-between items-end gap-6 mb-16">
+        {/* Admin Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
             <div>
-                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-slate-900 mb-2">Platform Command</h1>
-                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Managing {users.length} Registered Identities</p>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-600 mb-2 block">System Administration</span>
+                <h1 className="text-5xl md:text-6xl font-black tracking-tighter text-slate-900">Platform Command</h1>
             </div>
-            <button 
-                onClick={() => { localStorage.clear(); router.push("/auth"); }}
-                className="px-6 py-3 rounded-2xl bg-red-50 text-red-600 font-black text-[10px] uppercase tracking-widest border border-red-100 hover:bg-red-100 transition-all"
-            >
-                Terminate Session
-            </button>
+            <div className="flex items-center gap-4">
+                <button 
+                    onClick={() => { localStorage.clear(); router.push("/auth"); }}
+                    className="px-8 py-4 rounded-2xl bg-red-50 text-red-600 font-black text-[11px] uppercase tracking-widest border border-red-100 hover:bg-red-100 transition-all active:scale-95"
+                >
+                    Terminate Session
+                </button>
+            </div>
         </div>
 
-        <div className="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+        {/* System Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-16">
+            {[
+                { label: "Total Identities", value: users.length, icon: "groups", color: "text-slate-900", bg: "bg-slate-50" },
+                { label: "Active Hosts", value: users.filter(u => u.role === 'HOST').length, icon: "key", color: "text-teal-600", bg: "bg-teal-50" },
+                { label: "System Staff", value: users.filter(u => u.is_staff || u.is_superuser).length, icon: "shield_person", color: "text-indigo-600", bg: "bg-indigo-50" },
+                { label: "Security Status", value: "Verified", icon: "verified_user", color: "text-emerald-600", bg: "bg-emerald-50" }
+            ].map((stat, i) => (
+                <div key={i} className="p-8 rounded-[2.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 group">
+                    <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                        <span className="material-symbols-outlined text-xl">{stat.icon}</span>
+                    </div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                    <p className="text-2xl font-black text-slate-900 tracking-tighter">{stat.value}</p>
+                </div>
+            ))}
+        </div>
+
+        {/* Identities Table */}
+        <div className="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden mb-24">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
                 <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Member ID</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Identity</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Security Role</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase">Contact Matrix</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-slate-400 tracking-widest uppercase text-right">Operations</th>
+                    <th className="px-10 py-8 text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Access ID</th>
+                    <th className="px-10 py-8 text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Identity Profile</th>
+                    <th className="px-10 py-8 text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Privilege Level</th>
+                    <th className="px-10 py-8 text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase">Contact Vector</th>
+                    <th className="px-10 py-8 text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase text-right">Operations</th>
                 </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
@@ -152,46 +174,46 @@ export default function AdminDashboard() {
                     const isSystemAdmin = user.is_staff || user.is_superuser || user.role === 'ADMIN';
                     return (
                     <tr key={user.id} className="hover:bg-slate-50/30 transition-colors group">
-                        <td className="px-8 py-6">
-                            <span className="font-black text-slate-300 text-xs tracking-tighter">#00{user.id}</span>
+                        <td className="px-10 py-8">
+                            <span className="font-black text-slate-300 text-xs tracking-widest">#USR-{user.id.toString().padStart(4, '0')}</span>
                         </td>
-                        <td className="px-8 py-6">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-xs">
+                        <td className="px-10 py-8">
+                            <div className="flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-sm">
                                     {user.username[0].toUpperCase()}
                                 </div>
                                 <div>
-                                    <p className="font-black text-slate-900 leading-none mb-1">{user.username}</p>
-                                    <p className="text-xs font-bold text-slate-400">{user.full_name || 'No legal name'}</p>
+                                    <p className="font-black text-slate-900 tracking-tight text-lg mb-0.5">{user.username}</p>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{user.full_name || 'No legal name verified'}</p>
                                 </div>
                             </div>
                         </td>
-                        <td className="px-8 py-6">
-                            <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
-                                isSystemAdmin ? 'bg-indigo-50 text-indigo-600 border border-indigo-100' : 
+                        <td className="px-10 py-8">
+                            <span className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] ${
+                                isSystemAdmin ? 'bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm' : 
                                 user.role === 'HOST' ? 'bg-teal-50 text-teal-600 border border-teal-100' : 
                                 'bg-slate-50 text-slate-500 border border-slate-100'
                             }`}>
-                                {isSystemAdmin ? 'Administrator' : user.role}
+                                {isSystemAdmin ? 'System Admin' : user.role === 'NORMAL' ? 'Standard Guest' : 'Verified Host'}
                             </span>
                         </td>
-                        <td className="px-8 py-6">
-                            <p className="text-xs font-bold text-slate-600 mb-1">{user.email}</p>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{user.phone_number || 'No Phone Verified'}</p>
+                        <td className="px-10 py-8">
+                            <p className="text-xs font-black text-slate-700 mb-1">{user.email}</p>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{user.phone_number || 'Mobile Unlinked'}</p>
                         </td>
-                        <td className="px-8 py-6 text-right">
-                            <div className="flex justify-end gap-2">
+                        <td className="px-10 py-8 text-right">
+                            <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <button 
                                     onClick={() => handleEditClick(user)}
-                                    className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition-all"
+                                    className="p-3 rounded-xl bg-white border border-slate-100 text-slate-400 hover:text-teal-600 hover:border-teal-100 transition-all shadow-sm"
                                 >
-                                    <span className="material-symbols-outlined text-lg">edit</span>
+                                    <span className="material-symbols-outlined text-lg">settings</span>
                                 </button>
                                 <button 
                                     onClick={() => handleDelete(user.id)}
-                                    className="p-2 rounded-lg bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all"
+                                    className="p-3 rounded-xl bg-white border border-slate-100 text-slate-400 hover:text-red-500 hover:border-red-100 transition-all shadow-sm"
                                 >
-                                    <span className="material-symbols-outlined text-lg">delete</span>
+                                    <span className="material-symbols-outlined text-lg">delete_sweep</span>
                                 </button>
                             </div>
                         </td>
