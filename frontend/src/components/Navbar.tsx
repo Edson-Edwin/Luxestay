@@ -48,23 +48,40 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           {isLoggedIn ? (
-            <Link 
-              href="/dashboard"
-              className={`px-6 py-2.5 rounded-full text-sm font-black transition-all ${
-                scrolled || pathname !== "/" 
-                  ? "bg-slate-900 text-white hover:bg-slate-800" 
-                  : "bg-white text-slate-900 hover:bg-teal-50"
-              }`}
-            >
-              Dashboard
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link 
+                href={
+                  localStorage.getItem("role") === "HOST" ? "/dashboard/host" :
+                  localStorage.getItem("role") === "ADMIN" ? "/dashboard/admin" :
+                  "/dashboard/guest"
+                }
+                className={`px-6 py-2.5 rounded-full text-sm font-black transition-all ${
+                  scrolled || pathname !== "/" 
+                    ? "bg-slate-900 text-white hover:bg-slate-800" 
+                    : "bg-white text-slate-900 hover:bg-teal-50 shadow-lg"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link 
+                href="/profile"
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-black transition-all border-2 ${
+                  scrolled || pathname !== "/" 
+                    ? "bg-slate-50 border-slate-200 text-slate-600 hover:border-teal-600 hover:text-teal-600" 
+                    : "bg-white/10 border-white/20 text-white hover:bg-white hover:text-slate-900"
+                }`}
+                title="Edit Profile"
+              >
+                {localStorage.getItem("username")?.[0].toUpperCase()}
+              </Link>
+            </div>
           ) : (
             <Link 
               href="/auth"
               className={`px-6 py-2.5 rounded-full text-sm font-black transition-all ${
                 scrolled || pathname !== "/" 
                   ? "bg-slate-900 text-white hover:bg-slate-800" 
-                  : "bg-white text-slate-900 hover:bg-teal-50"
+                  : "bg-white text-slate-900 hover:bg-teal-50 shadow-lg"
               }`}
             >
               Sign In
