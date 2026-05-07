@@ -1,7 +1,7 @@
 # LuxeStay Project Report (Advanced)
 
 ## 1. Executive Summary
-LuxeStay is a high-end, premium property rental platform designed to provide a seamless experience for both property owners (hosts) and guests. The platform focuses on luxury listings, flexible pricing models, and a modern, high-performance user interface. Built with scalability in mind, it utilizes a decoupled architecture with a Django REST Framework backend and a Next.js frontend.
+LuxeStay is a high-end, premium property rental platform designed to provide a seamless experience for both property hosts and guests. The platform focuses on luxury listings, flexible pricing models, and a modern, high-performance user interface. Built with scalability in mind, it utilizes a decoupled architecture with a Django REST Framework backend and a Next.js frontend, now featuring advanced role-based access control (RBAC) and profile management.
 
 ---
 
@@ -9,31 +9,31 @@ LuxeStay is a high-end, premium property rental platform designed to provide a s
 
 ### 2.1 Backend (Django REST Framework)
 - **Framework**: Django 6.0+ with Django REST Framework (DRF).
-- **Authentication**: JWT (JSON Web Tokens) using `rest_framework_simplejwt` with Secure Cookie support.
+- **Authentication**: JWT (JSON Web Tokens) with custom payload enrichment (Role, is_staff, is_superuser).
 - **Database**: **MySQL 8.0 / MariaDB** (Production) integrated via **PyMySQL**.
 - **Environment Management**: Robust configuration using `python-dotenv`.
 - **Key Modules**: 
-  - `accounts`: Granular RBAC (Role-Based Access Control) for Normal Users, Owners, and Admins.
+  - `accounts`: Advanced RBAC for Normal Users, Hosts, and Admins with mandatory profile verification.
   - `properties`: Advanced booking engine with multi-tiered pricing and real-time availability management.
 
 ### 2.2 Frontend (Next.js)
-- **Framework**: Next.js 14/15+ (App Router) for Server-Side Rendering (SSR) and Optimized Performance.
-- **Styling**: Vanilla CSS & Tailwind CSS with a curated design system (Stitch-inspired).
-- **State Management**: React Context API & Hooks for responsive UI state.
-- **Visuals**: Dynamic hero backgrounds, glassmorphism components, and smooth Framer Motion-style animations.
+- **Framework**: Next.js 14/15+ (App Router) for Server-Side Rendering (SSR).
+- **Styling**: Vanilla CSS & Tailwind CSS with a premium design system.
+- **State Management**: React Context API & Hooks with persistent role-based routing.
+- **Visuals**: Dynamic hero backgrounds, glassmorphism components, and smooth interactive animations.
 
 ---
 
 ## 3. Core Features
 
 ### 3.1 Flexible Property Pricing Matrix
-LuxeStay implements a unique 3D pricing matrix, allowing owners to toggle availability and set rates for:
+LuxeStay implements a unique 3D pricing matrix, allowing hosts to toggle availability and set rates for:
 - **Nightly**: Short-term stay calculations.
 - **Daily**: Day-use rental logic.
 - **Monthly**: Long-term lease automation.
 
 ### 3.2 Tiered Room Categorization
-Properties are not monolithic; they support multiple room types with dynamic pricing overrides:
+Properties support multiple room types with dynamic pricing overrides:
 - **Dormitory**: High-density, budget-friendly shared spaces.
 - **Double**: Standard luxury accommodation.
 - **Single**: Premium privacy-focused units.
@@ -41,8 +41,11 @@ Properties are not monolithic; they support multiple room types with dynamic pri
 ### 3.3 Intelligent Booking Engine
 - **Check-in/Out Logic**: Automatic calculation of duration and cost.
 - **Room Selection**: Real-time availability checks per category.
-- **Financial Security**: Configurable advance payment system to mitigate no-shows.
-- **Availability Toggle**: Instant platform-wide visibility control for owners.
+- **Availability Toggle**: Instant platform-wide visibility control for hosts via dedicated dashboard.
+
+### 3.4 Profile & Identity Management (New)
+- **Unified Profile Edit**: All users can update their Full Name, Email, Phone Number, and Address.
+- **Registration Verification**: Mandatory identity fields (Full Name, Phone) for all account types to ensure platform trust.
 
 ---
 
@@ -50,7 +53,7 @@ Properties are not monolithic; they support multiple room types with dynamic pri
 
 ```mermaid
 erDiagram
-    USER ||--o{ PROPERTY : owns
+    USER ||--o{ PROPERTY : hosts
     USER ||--o{ BOOKING : makes
     PROPERTY ||--o{ ROOMTYPE : contains
     PROPERTY ||--o{ BOOKING : receives
@@ -58,10 +61,10 @@ erDiagram
 ```
 
 ### 4.1 Key Data Models
-- **User**: Custom user model with `role` (NORMAL, OWNER, ADMIN) and profile metadata.
+- **User**: Custom user model with `role` (NORMAL, HOST, ADMIN), `phone_number`, and `full_name`.
 - **Property**: Core entity storing location data, global pricing, and availability flags.
 - **RoomType**: Relational model providing granular pricing overrides for specific property sections.
-- **Booking**: Transactional record linking users, properties, and specific room categories with date-range logic.
+- **Booking**: Transactional record linking users, properties, and specific room categories.
 
 ---
 
@@ -69,11 +72,11 @@ erDiagram
 
 | Category | Endpoint | Method | Security | Description |
 |----------|----------|--------|----------|-------------|
-| **Auth** | `/api/auth/register/` | `POST` | Public | User onboarding |
-| **Auth** | `/api/auth/login/` | `POST` | Public | JWT Token issuance |
+| **Auth** | `/api/auth/register/` | `POST` | Public | User onboarding with verification |
+| **Auth** | `/api/auth/login/` | `POST` | Public | JWT issuance + User metadata |
+| **Auth** | `/api/auth/profile/` | `GET/PATCH` | Auth | Profile management |
 | **Properties** | `/api/properties/` | `GET/POST` | Mixed | List or curate properties |
-| **Booking** | `/api/properties/bookings/` | `POST` | Auth | Secure reservation submission |
-| **Admin** | `/api/auth/users/` | `GET` | Admin | System-wide user audit |
+| **Admin** | `/api/auth/users/` | `GET/PATCH/DELETE` | Admin | Full system user audit and management |
 
 ---
 
@@ -81,38 +84,32 @@ erDiagram
 
 ### 6.1 Containerization (Docker)
 The project is fully containerized for consistent development and production environments.
-- **`backend/Dockerfile`**: Optimized Python-slim image with MySQL client dependencies.
-- **`frontend/Dockerfile`**: Multi-stage build for minimal production bundle size.
-- **`docker-compose.yml`**: Orchestrates MySQL, Backend, and Frontend services with persistent volumes.
-
-### 6.2 Environment Security
-All sensitive configurations (DB credentials, Secret Keys, API URLs) are managed via a centralized `.env` system, excluded from version control for maximum security.
+- **`backend/Dockerfile`**: Optimized Python-slim image.
+- **`frontend/Dockerfile`**: Multi-stage build for minimal production bundle.
+- **`docker-compose.yml`**: Orchestrates MySQL, Backend, and Frontend services.
 
 ---
 
-## 7. Setup & Installation
+## 7. Admin & Host Management
 
-### 7.1 Manual (Development)
-1. **Backend**: 
-   - `python -m venv venv && source venv/bin/activate`
-   - `pip install -r requirements.txt`
-   - Setup `.env` and run `python manage.py migrate`
-2. **Frontend**:
-   - `npm install`
-   - `npm run dev`
+### 7.1 Advanced Host Dashboard
+Hosts have exclusive access to `/dashboard/host` to manage their property visibility and view guest bookings with real-time status updates.
 
-### 7.2 Docker (Production-Ready)
-```bash
-docker-compose up --build
-```
+### 7.2 Professional Admin Control (Enhanced)
+Admins can perform system-wide audits via `/dashboard/admin`, featuring:
+- **User Management**: Real-time Edit and Delete functionality for all accounts.
+- **Role Correction**: Capability to promote/demote users between NORMAL, HOST, and ADMIN status.
+- **Data Transparency**: Enhanced table views including Phone Numbers and Email IDs for all system users.
 
 ---
 
 ## 8. Recent Milestone Updates (May 2026)
-- **Database Migration**: Successfully transitioned from SQLite to **MySQL/MariaDB** for enterprise-grade data handling.
-- **Pricing Overhaul**: Implemented category-specific pricing logic for diverse room types.
-- **DevOps Integration**: Added full **Docker support** for both frontend and backend.
-- **UI Refinement**: Integrated advanced date-logic and real-time price calculators in the booking panel.
+- **Role Standardization**: Successfully rebranded 'Owner' role to **'Host'** for industry-standard terminology.
+- **Profile Management**: Launched the **Profile Edit** feature allowing users to manage their own identity data.
+- **Admin Overhaul**: Implemented full CRUD operations on the Admin User Management dashboard.
+- **Data Integrity**: Enforced mandatory registration fields (Full Name, Phone) for enhanced guest-host trust.
+- **JWT Enrichment**: Upgraded authentication tokens to carry granular role and permission flags.
 
 ---
-*LuxeStay Technical Report v2.1 | Last Updated: 2026-05-02*
+*LuxeStay Technical Report v3.0 | Last Updated: 2026-05-07*
+

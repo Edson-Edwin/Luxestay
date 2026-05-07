@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { API_URL } from "@/lib/config";
+import { API_URL, mediaUrl } from "@/lib/config";
 
 interface Booking {
   id: number;
@@ -202,8 +202,16 @@ export default function HostDashboard() {
                     {properties.map((prop) => (
                         <div key={prop.id} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 flex items-center justify-between">
                             <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-slate-400">home</span>
+                                <div className="w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center">
+                                    {(prop as any).image || (prop as any).image_url ? (
+                                        <img 
+                                            src={mediaUrl((prop as any).image || (prop as any).image_url)} 
+                                            className="w-full h-full object-cover" 
+                                            alt="" 
+                                        />
+                                    ) : (
+                                        <span className="material-symbols-outlined text-slate-400">home</span>
+                                    )}
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-bold text-slate-900">{prop.title}</h3>

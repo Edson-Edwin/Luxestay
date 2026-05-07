@@ -13,9 +13,12 @@ class IsHostOrReadOnly(permissions.BasePermission):
             return True
         return obj.host == request.user
 
+from rest_framework.parsers import MultiPartParser, FormParser
+
 class PropertyViewSet(viewsets.ModelViewSet):
     queryset = Property.objects.all().order_by('-created_at')
     serializer_class = PropertySerializer
+    parser_classes = (MultiPartParser, FormParser)
 
     def get_queryset(self):
         queryset = Property.objects.all().order_by('-created_at')
@@ -57,6 +60,12 @@ class PropertyViewSet(viewsets.ModelViewSet):
         from .models import PropertyImage, RoomType
         for image in images_data:
             PropertyImage.objects.create(property=property_obj, image=image)
+        
+        # Fallback: If main image is missing but gallery images were uploaded, 
+        # use the first gallery image as the main image.
+        if not property_obj.image and images_data:
+            property_obj.image = images_data[0]
+            property_obj.save()
         
         # Handle room types if provided in request data
         import json

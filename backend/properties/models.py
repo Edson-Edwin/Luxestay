@@ -31,10 +31,36 @@ class Property(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        if self.image:
+            self.image = compress_image(self.image)
+        super().save(*args, **kwargs)
+
 import os
 from PIL import Image
 from io import BytesIO
 from django.core.files.base import ContentFile
+
+def compress_image(image_field):
+    # Open the image using Pillow
+    img = Image.open(image_field)
+    
+    # Convert to RGB if necessary (to handle RGBA or other modes)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Resize if too large
+    max_size = (1200, 1200)
+    img.thumbnail(max_size, Image.LANCZOS)
+    
+    # Compress
+    output = BytesIO()
+    img.save(output, format='JPEG', quality=70)
+    output.seek(0)
+    
+    # Replace the image with the compressed version
+    name = os.path.splitext(image_field.name)[0] + '.jpg'
+    return ContentFile(output.read(), name=name)
 
 class PropertyImage(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='images')
@@ -42,26 +68,7 @@ class PropertyImage(models.Model):
     
     def save(self, *args, **kwargs):
         if self.image:
-            # Open the image using Pillow
-            img = Image.open(self.image)
-            
-            # Convert to RGB if necessary (to handle RGBA or other modes)
-            if img.mode != 'RGB':
-                img = img.convert('RGB')
-            
-            # Resize if too large
-            max_size = (1200, 1200)
-            img.thumbnail(max_size, Image.LANCZOS)
-            
-            # Compress
-            output = BytesIO()
-            img.save(output, format='JPEG', quality=70)
-            output.seek(0)
-            
-            # Replace the image with the compressed version
-            name = os.path.splitext(self.image.name)[0] + '.jpg'
-            self.image = ContentFile(output.read(), name=name)
-            
+            self.image = compress_image(self.image)
         super().save(*args, **kwargs)
 
 class RoomType(models.Model):
